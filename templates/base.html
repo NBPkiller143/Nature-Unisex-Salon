@@ -40,7 +40,7 @@
       <div class="top-bar-items">
         <div class="top-bar-item">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:{{ settings.phone if settings else '+917483737517' }}">{{ settings.phone if settings else '+91 74837 37517' }}</a>
+          <a href="tel:{{ (settings.phone if settings else '+91 74837 37517')|tel_link }}">{{ settings.phone if settings else '+91 74837 37517' }}</a>
         </div>
         <div class="top-bar-item">
           <a href="{{ url_for('admin_login') }}" style="opacity: 0.75; font-size: 0.78rem;"><i class="fa-solid fa-lock"></i> Staff Portal</a>
@@ -57,7 +57,10 @@
         <span class="brand-subtitle">{{ settings.tagline if settings else 'Style. Care. Confidence.' }}</span>
       </a>
 
-      <nav class="nav-links">
+      <!-- Navigation Drawer Backdrop -->
+      <div class="nav-backdrop" id="navBackdrop"></div>
+
+      <nav class="nav-links" id="navLinks">
         <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">Home</a>
         <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">About</a>
         <a href="{{ url_for('services') }}" class="nav-link {% if request.endpoint == 'services' %}active{% endif %}">Services</a>
@@ -65,13 +68,25 @@
         <a href="{{ url_for('gallery') }}" class="nav-link {% if request.endpoint == 'gallery' %}active{% endif %}">Gallery</a>
         <a href="{{ url_for('reviews') }}" class="nav-link {% if request.endpoint == 'reviews' %}active{% endif %}">Reviews</a>
         <a href="{{ url_for('contact') }}" class="nav-link {% if request.endpoint == 'contact' %}active{% endif %}">Contact</a>
+
+        <div class="nav-mobile-actions">
+          <a href="{{ url_for('booking') }}" class="btn btn-gold">
+            <i class="fa-regular fa-calendar-check"></i> Book Appointment
+          </a>
+          <a href="{{ whatsapp_chat_url }}" target="_blank" rel="noopener" class="btn btn-outline-gold" style="background: rgba(37, 211, 102, 0.12); border-color: #25d366; color: #15803d;">
+            <i class="fa-brands fa-whatsapp" style="color: #25d366;"></i> Chat on WhatsApp
+          </a>
+          <a href="{{ url_for('admin_login') }}" class="btn btn-outline btn-sm" style="margin-top: 0.5rem; opacity: 0.85;">
+            <i class="fa-solid fa-lock"></i> Staff Login
+          </a>
+        </div>
       </nav>
 
       <div class="nav-actions">
         <a href="{{ url_for('booking') }}" class="btn btn-gold btn-sm">
           <i class="fa-regular fa-calendar-check"></i> Book Appointment
         </a>
-        <button class="mobile-toggle" aria-label="Toggle Navigation Menu">
+        <button class="mobile-toggle" id="mobileMenuToggle" aria-label="Toggle Navigation Menu">
           <i class="fa-solid fa-bars"></i>
         </button>
       </div>

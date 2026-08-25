@@ -36,12 +36,29 @@ def save_uploaded_image(file_storage, folder_name='uploads'):
     
     return f"/static/uploads/{saved_filename}"
 
+def clean_phone_number(phone_str, default="917483737517"):
+    """
+    Cleans any raw phone string into a standard numeric WhatsApp / international dialing string.
+    Handles '+91 74837 37517', '07483737517', '7483737517', '917483737517', etc.
+    """
+    if not phone_str:
+        return default
+    digits = "".join(filter(str.isdigit, str(phone_str)))
+    if not digits:
+        return default
+    # If 10 digits (e.g. 7483737517), prepend India country code 91
+    if len(digits) == 10:
+        return f"91{digits}"
+    # If 11 digits starting with 0 (e.g. 07483737517)
+    if len(digits) == 11 and digits.startswith('0'):
+        return f"91{digits[1:]}"
+    return digits
+
 def build_whatsapp_booking_url(whatsapp_number, customer_name, service_name, appointment_date, appointment_time, notes=""):
     """
     Generates a pre-filled WhatsApp click-to-chat URL for quick booking.
     """
-    # Clean phone number: remove non-digits
-    clean_number = "".join(filter(str.isdigit, str(whatsapp_number or '917483737517')))
+    clean_number = clean_phone_number(whatsapp_number)
     
     lines = [
         "👋 Hello Nature Unisex Salon,",
@@ -62,6 +79,7 @@ def build_whatsapp_booking_url(whatsapp_number, customer_name, service_name, app
 
 def build_whatsapp_general_url(whatsapp_number, message="Hello Nature Unisex Salon, I'd like to enquire about your salon services."):
     """Generates standard WhatsApp quick chat link."""
-    clean_number = "".join(filter(str.isdigit, str(whatsapp_number or '917483737517')))
+    clean_number = clean_phone_number(whatsapp_number)
     encoded_message = urllib.parse.quote(message)
     return f"https://api.whatsapp.com/send?phone={clean_number}&text={encoded_message}"
+

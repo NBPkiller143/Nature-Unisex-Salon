@@ -14,13 +14,19 @@
 </head>
 <body>
 
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop"></div>
+
   <!-- Admin Sidebar Navigation -->
-  <aside class="admin-sidebar">
+  <aside class="admin-sidebar" id="adminSidebar">
     <div class="sidebar-header">
       <div class="sidebar-brand">
         <h3>{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</h3>
         <span>Admin Portal</span>
       </div>
+      <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
 
     <nav class="sidebar-nav">
@@ -78,8 +84,8 @@
     
     <!-- Top Header Bar -->
     <header class="admin-topbar">
-      <div style="display: flex; align-items: center; gap: 1rem;">
-        <button id="sidebarToggle" class="btn-action" style="display: none;" aria-label="Toggle Sidebar">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <button id="sidebarToggle" class="admin-sidebar-toggle" aria-label="Toggle Sidebar">
           <i class="fa-solid fa-bars"></i>
         </button>
         <div class="topbar-title">
@@ -88,11 +94,11 @@
       </div>
 
       <div class="topbar-actions">
-        <a href="{{ url_for('index') }}" target="_blank" class="btn-action">
-          <i class="fa-solid fa-globe"></i> View Public Website
+        <a href="{{ url_for('index') }}" target="_blank" class="btn-action" title="View Public Website">
+          <i class="fa-solid fa-globe"></i> <span class="action-text">View Site</span>
         </a>
-        <a href="{{ url_for('admin_logout') }}" class="btn-action delete">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        <a href="{{ url_for('admin_logout') }}" class="btn-action delete" title="Sign Out">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> <span class="action-text">Logout</span>
         </a>
       </div>
     </header>

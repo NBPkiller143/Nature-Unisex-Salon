@@ -4,14 +4,56 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Mobile Sidebar Toggle
+  // 1. Mobile Sidebar Toggle & Backdrop
   const sidebarToggle = document.getElementById('sidebarToggle');
-  const adminSidebar = document.querySelector('.admin-sidebar');
-  if (sidebarToggle && adminSidebar) {
-    sidebarToggle.addEventListener('click', () => {
-      adminSidebar.classList.toggle('open');
+  const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+  const adminSidebar = document.getElementById('adminSidebar') || document.querySelector('.admin-sidebar');
+  const adminBackdrop = document.getElementById('adminSidebarBackdrop');
+
+  function openSidebar() {
+    if (adminSidebar) adminSidebar.classList.add('open');
+    if (adminBackdrop) adminBackdrop.classList.add('active');
+  }
+
+  function closeSidebar() {
+    if (adminSidebar) adminSidebar.classList.remove('open');
+    if (adminBackdrop) adminBackdrop.classList.remove('active');
+  }
+
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (adminSidebar && adminSidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
     });
   }
+
+  if (sidebarCloseBtn) {
+    sidebarCloseBtn.addEventListener('click', closeSidebar);
+  }
+
+  if (adminBackdrop) {
+    adminBackdrop.addEventListener('click', closeSidebar);
+  }
+
+  // Close sidebar on link click on mobile
+  document.querySelectorAll('.nav-item-link').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 992) {
+        closeSidebar();
+      }
+    });
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && adminSidebar && adminSidebar.classList.contains('open')) {
+      closeSidebar();
+    }
+  });
 
   // 2. Generic Modal Open/Close handler
   window.openModal = function(modalId) {

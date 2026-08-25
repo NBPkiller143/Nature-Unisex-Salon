@@ -1,9 +1,13 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
+
+def get_utc_now():
+    """Return timezone-aware current UTC time."""
+    return datetime.now(timezone.utc)
 
 class User(UserMixin, db.Model):
     """Admin User model for authentication."""
@@ -14,7 +18,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(256), nullable=False)
     is_admin = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=get_utc_now)
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -40,7 +44,7 @@ class Service(db.Model):
     image_url = db.Column(db.String(255), nullable=True)
     is_active = db.Column(db.Boolean, default=True, index=True)
     display_order = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=get_utc_now)
     
     # Relationship with appointments
     appointments = db.relationship('Appointment', backref='service_ref', lazy='dynamic')
@@ -85,7 +89,7 @@ class Appointment(db.Model):
     
     status = db.Column(db.String(20), default='Pending', index=True) # 'Pending', 'Confirmed', 'Completed', 'Cancelled'
     admin_notes = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    created_at = db.Column(db.DateTime, default=get_utc_now, index=True)
     
     def __repr__(self):
         return f'<Appointment {self.id} - {self.customer_name} ({self.status})>'
@@ -100,7 +104,7 @@ class Gallery(db.Model):
     category = db.Column(db.String(50), nullable=False, default='Hair', index=True) # 'Hair', 'Makeup', 'Bridal', 'Grooming', 'Interior', 'Transformations'
     image_url = db.Column(db.String(255), nullable=False)
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=get_utc_now)
     
     def __repr__(self):
         return f'<Gallery {self.title} ({self.category})>'
@@ -117,7 +121,7 @@ class Review(db.Model):
     service_name = db.Column(db.String(100), nullable=True) # e.g. 'Hydra Facial & Beard Sculpting'
     is_active = db.Column(db.Boolean, default=True, index=True)
     display_order = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=get_utc_now)
     
     def __repr__(self):
         return f'<Review {self.customer_name} ({self.rating}★)>'
@@ -134,7 +138,7 @@ class ContactEnquiry(db.Model):
     subject = db.Column(db.String(150), default='General Salon Inquiry')
     message = db.Column(db.Text, nullable=False)
     is_read = db.Column(db.Boolean, default=False, index=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    created_at = db.Column(db.DateTime, default=get_utc_now, index=True)
     
     def __repr__(self):
         return f'<ContactEnquiry {self.id} from {self.name}>'
@@ -161,7 +165,7 @@ class WebsiteSetting(db.Model):
     hero_subtext = db.Column(db.Text, default='Experience premium hair styling, skin care, grooming, and rejuvenating beauty treatments crafted for both men and women in an elegant, hygienic haven.')
     about_text = db.Column(db.Text, default='Nature Unisex Salon is a contemporary sanctuary dedicated to helping men and women embrace their finest personal style. We blend botanical care with state-of-the-art styling techniques to deliver an unhurried, luxurious grooming experience.')
     currency_symbol = db.Column(db.String(10), default='₹')
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=get_utc_now, onupdate=get_utc_now)
     
     @classmethod
     def get_settings(cls):

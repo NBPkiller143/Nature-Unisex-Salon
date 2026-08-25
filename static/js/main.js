@@ -14,34 +14,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 2. Mobile Menu Toggle
-  const mobileToggle = document.querySelector('.mobile-toggle');
-  const navLinks = document.querySelector('.nav-links');
+  // 2. Mobile Menu Drawer & Backdrop Toggle
+  const mobileToggle = document.getElementById('mobileMenuToggle') || document.querySelector('.mobile-toggle');
+  const navLinks = document.getElementById('navLinks') || document.querySelector('.nav-links');
+  const navBackdrop = document.getElementById('navBackdrop') || document.querySelector('.nav-backdrop');
+
+  function openMobileMenu() {
+    if (!navLinks) return;
+    navLinks.classList.add('active');
+    navBackdrop?.classList.add('active');
+    document.body.classList.add('nav-open');
+    const icon = mobileToggle?.querySelector('i');
+    if (icon) {
+      icon.classList.remove('fa-bars');
+      icon.classList.add('fa-xmark');
+    }
+  }
+
+  function closeMobileMenu() {
+    if (!navLinks) return;
+    navLinks.classList.remove('active');
+    navBackdrop?.classList.remove('active');
+    document.body.classList.remove('nav-open');
+    const icon = mobileToggle?.querySelector('i');
+    if (icon) {
+      icon.classList.remove('fa-xmark');
+      icon.classList.add('fa-bars');
+    }
+  }
+
   if (mobileToggle && navLinks) {
-    mobileToggle.addEventListener('click', () => {
-      navLinks.classList.toggle('active');
-      const icon = mobileToggle.querySelector('i');
-      if (icon) {
-        if (navLinks.classList.contains('active')) {
-          icon.classList.remove('fa-bars');
-          icon.classList.add('fa-xmark');
-        } else {
-          icon.classList.remove('fa-xmark');
-          icon.classList.add('fa-bars');
-        }
+    mobileToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (navLinks.classList.contains('active')) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
       }
     });
 
-    // Close menu when clicking a link
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-        const icon = mobileToggle.querySelector('i');
-        if (icon) {
-          icon.classList.remove('fa-xmark');
-          icon.classList.add('fa-bars');
-        }
-      });
+    navBackdrop?.addEventListener('click', closeMobileMenu);
+
+    // Close menu when clicking any nav link
+    document.querySelectorAll('.nav-link, .nav-mobile-actions a').forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+        closeMobileMenu();
+      }
     });
   }
 

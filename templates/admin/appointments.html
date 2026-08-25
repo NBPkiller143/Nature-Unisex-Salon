@@ -103,7 +103,7 @@
                 </button>
 
                 <!-- WhatsApp Quick Chat -->
-                <a href="https://api.whatsapp.com/send?phone={{ app.phone|replace('+', '')|replace(' ', '') }}&text=Hello%20{{ app.customer_name }}%2C%20this%20is%20Nature%20Unisex%20Salon%20regarding%20your%20appointment%20for%20{{ app.service_name }}%20on%20{{ app.appointment_date }}." target="_blank" rel="noopener" class="btn-action" title="Chat on WhatsApp" style="color: #16a34a;">
+                <a href="https://api.whatsapp.com/send?phone={{ app.phone|clean_wa_phone }}&text=Hello%20{{ app.customer_name|urlencode }}%2C%20this%20is%20Nature%20Unisex%20Salon%20regarding%20your%20appointment%20for%20{{ app.service_name|urlencode }}%20on%20{{ app.appointment_date }}." target="_blank" rel="noopener" class="btn-action" title="Chat on WhatsApp" style="color: #16a34a;">
                   <i class="fa-brands fa-whatsapp"></i>
                 </a>
 

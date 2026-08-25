@@ -36,7 +36,7 @@
           <div class="contact-item-icon"><i class="fa-solid fa-phone"></i></div>
           <div class="contact-item-text">
             <h5>Phone Call</h5>
-            <p><a href="tel:{{ settings.phone if settings else '+917483737517' }}" style="color: #ffffff; text-decoration: underline;">{{ settings.phone if settings else '+91 74837 37517' }}</a></p>
+            <p><a href="tel:{{ (settings.phone if settings else '+91 74837 37517')|tel_link }}" style="color: #ffffff; text-decoration: underline;">{{ settings.phone if settings else '+91 74837 37517' }}</a></p>
           </div>
         </div>
 

@@ -52,7 +52,7 @@
             </td>
             <td>
               <div class="action-btn-group">
-                <a href="https://api.whatsapp.com/send?phone={{ inq.phone|replace('+', '')|replace(' ', '') }}&text=Hello%20{{ inq.name }}%2C%20thank%20you%20for%20contacting%20Nature%20Unisex%20Salon%20regarding%20'{{ inq.subject }}'." target="_blank" rel="noopener" class="btn-action" title="Reply on WhatsApp" style="color: #16a34a;">
+                <a href="https://api.whatsapp.com/send?phone={{ inq.phone|clean_wa_phone }}&text=Hello%20{{ inq.name|urlencode }}%2C%20thank%20you%20for%20contacting%20Nature%20Unisex%20Salon%20regarding%20%27{{ inq.subject|urlencode }}%27." target="_blank" rel="noopener" class="btn-action" title="Reply on WhatsApp" style="color: #16a34a;">
                   <i class="fa-brands fa-whatsapp"></i> WhatsApp
                 </a>
                 <form action="{{ url_for('admin_delete_enquiry', enquiry_id=inq.id) }}" method="POST" onsubmit="return confirm('Delete this enquiry message?');" style="display: inline;">

@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from config import config
 from models import db, User, Service, Appointment, Gallery, Review, ContactEnquiry, WebsiteSetting
-from utils import save_uploaded_image, build_whatsapp_booking_url, build_whatsapp_general_url
+from utils import save_uploaded_image, build_whatsapp_booking_url, build_whatsapp_general_url, clean_phone_number
 from seed_data import seed_database
 
 def create_app(config_name=None):
@@ -37,6 +37,22 @@ def create_app(config_name=None):
     def load_user(user_id):
         return db.session.get(User, int(user_id))
     
+    # Template filters for formatting phone and WhatsApp links
+    @app.template_filter('clean_wa_phone')
+    def clean_wa_phone_filter(phone_str):
+        return clean_phone_number(phone_str)
+
+    @app.template_filter('tel_link')
+    def tel_link_filter(phone_str):
+        if not phone_str:
+            return '+917483737517'
+        digits = "".join(filter(str.isdigit, str(phone_str)))
+        if len(digits) == 10:
+            return f"+91{digits}"
+        elif len(digits) > 10 and not phone_str.strip().startswith('+'):
+            return f"+{digits}"
+        return phone_str.replace(' ', '')
+    
     # Inject global settings and helper data into all templates
     @app.context_processor
     def inject_global_data():
@@ -47,14 +63,18 @@ def create_app(config_name=None):
             settings = None
             nav_services = []
             
-        whatsapp_url = build_whatsapp_general_url(settings.whatsapp_number if settings else '917483737517')
+        salon_wa = settings.whatsapp_number if (settings and settings.whatsapp_number) else '917483737517'
+        whatsapp_url = build_whatsapp_general_url(salon_wa)
+        clean_salon_phone = clean_phone_number(settings.phone if settings else '917483737517')
         
         return {
             'settings': settings,
             'nav_services': nav_services,
             'current_year': datetime.now().year,
-            'whatsapp_chat_url': whatsapp_url
+            'whatsapp_chat_url': whatsapp_url,
+            'salon_clean_phone': clean_salon_phone
         }
+
 
     # ==========================================
     # PUBLIC ROUTES

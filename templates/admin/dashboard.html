@@ -136,7 +136,7 @@
                 <button type="button" class="btn-action" onclick="openStatusModal({{ app.id }}, '{{ app.customer_name }}', '{{ app.status }}', '{{ app.admin_notes or '' }}')">
                   <i class="fa-solid fa-pen-to-square"></i> Status
                 </button>
-                <a href="https://api.whatsapp.com/send?phone={{ app.phone|replace('+', '')|replace(' ', '') }}" target="_blank" rel="noopener" class="btn-action" title="Chat on WhatsApp" style="color: #16a34a;">
+                <a href="https://api.whatsapp.com/send?phone={{ app.phone|clean_wa_phone }}" target="_blank" rel="noopener" class="btn-action" title="Chat on WhatsApp" style="color: #16a34a;">
                   <i class="fa-brands fa-whatsapp"></i>
                 </a>
               </div>

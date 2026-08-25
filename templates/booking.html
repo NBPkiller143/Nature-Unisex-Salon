@@ -53,7 +53,7 @@
 
           <div style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 1.5rem;">
             <p style="font-size: 0.85rem; color: rgba(255,255,255,0.75); margin-bottom: 0.5rem;"><i class="fa-solid fa-phone text-gold"></i> Prefer booking by phone?</p>
-            <a href="tel:{{ settings.phone if settings else '+917483737517' }}" style="color: #ffffff; font-weight: 700; font-size: 1.1rem; text-decoration: underline;">
+            <a href="tel:{{ (settings.phone if settings else '+91 74837 37517')|tel_link }}" style="color: #ffffff; font-weight: 700; font-size: 1.1rem; text-decoration: underline;">
               {{ settings.phone if settings else '+91 74837 37517' }}
             </a>
           </div>
