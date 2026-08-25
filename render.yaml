@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: nature-unisex-salon
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app"
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SALON_NAME
+        value: "Nature Unisex Salon"
+      - key: SALON_PHONE
+        value: "+91 74837 37517"
+      - key: SALON_WHATSAPP
+        value: "917483737517"
