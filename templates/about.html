@@ -2,6 +2,8 @@
 
 {% block title %}About Us | {{ settings.salon_name if settings else 'Nature Unisex Salon' }}{% endblock %}
 
+{% block meta_description %}Learn about Nature Unisex Salon in Bengaluru. Our philosophy of organic hair care, master styling for men and women, hospital-grade hygiene, and personalized grooming rituals.{% endblock %}
+
 {% block content %}
 
 <!-- Page Hero Header -->
@@ -9,100 +11,153 @@
   <div class="container">
     <div class="section-tag" style="background: rgba(197, 160, 89, 0.2); color: var(--gold-light);"><i class="fa-solid fa-leaf"></i> Our Philosophy</div>
     <h1 style="color: #ffffff; margin-bottom: 0.8rem;">About Nature Unisex Salon</h1>
-    <p style="color: rgba(255,255,255,0.85); max-width: 620px; margin: 0 auto; font-size: 1.1rem;">Where refined styling, botanical care, and mindful grooming unite in harmony.</p>
+    <p style="color: rgba(255,255,255,0.85); max-width: 650px; margin: 0 auto; font-size: 1.1rem;">Where refined hair artistry, botanical wellness, and personalized grooming unite in harmony.</p>
   </div>
 </section>
 
-<!-- Main Story -->
+<!-- Main Story Section -->
 <section class="section-padding" style="background: var(--bg-main);">
   <div class="container">
     <div class="about-grid">
       <div class="about-image-wrapper">
-        <img src="{{ url_for('static', filename='images/about_salon.jpg') }}" alt="Nature Unisex Salon" class="about-img-main">
+        <img src="{{ url_for('static', filename='images/about_salon.jpg') }}" alt="Nature Unisex Salon Styling Experience" class="about-img-main">
+        <div class="about-img-badge">
+          <div class="badge-number"><i class="fa-solid fa-gem text-gold"></i></div>
+          <div class="badge-label">Mindful Artistry</div>
+        </div>
       </div>
 
-      <div>
-        <div class="section-tag"><i class="fa-solid fa-spa"></i> The Nature Story</div>
-        <h2 class="section-title">Elevating Daily Grooming Into An Art Form</h2>
+      <div class="about-content">
+        <div class="section-tag"><i class="fa-solid fa-spa"></i> The Nature Philosophy</div>
+        <h2 class="section-title">Elevating Personal Care Into A Rejuvenating Experience</h2>
         <p class="section-desc">{{ settings.about_text if settings else 'Nature Unisex Salon is a contemporary sanctuary dedicated to helping men and women embrace their finest personal style. We blend botanical care with state-of-the-art styling techniques to deliver an unhurried, luxurious grooming experience.' }}</p>
         
-        <p>Whether you visit us for a precision fade, an artistic balayage colour transformation, or an invigorating herbal head massage, our aim is to make every minute restorative, relaxing, and tailored uniquely to you.</p>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.65; margin-bottom: 1.5rem;">
+          Whether you visit us for a precision fade, beard contouring, an organic balayage colour transformation, or an invigorating herbal scalp therapy, our mission is to provide an unhurried, hygienic, and deeply restorative salon experience.
+        </p>
 
-        <div class="about-points" style="margin-top: 1.5rem;">
+        <div class="about-points">
           <div class="about-point-item">
-            <i class="fa-solid fa-check-double"></i>
+            <i class="fa-solid fa-person-half-dress"></i>
             <div>
-              <h5>Services for Men & Women</h5>
-              <p>Specialized stylists offering dedicated grooming and beauty care for all clients.</p>
+              <h5>Dedicated Care for Men & Women</h5>
+              <p>Specialized stylists trained in contemporary men's grooming and women's hair artistry.</p>
             </div>
           </div>
           <div class="about-point-item">
             <i class="fa-solid fa-bottle-droplet"></i>
             <div>
               <h5>Botanical & Safe Formulations</h5>
-              <p>Top-tier organic hair spa elixirs and ammonia-safe colour systems.</p>
+              <p>Nourishing organic hair spa elixirs, keratin care, and ammonia-free colour treatments.</p>
             </div>
           </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center; margin-top: 2rem; flex-wrap: wrap;">
+          <a href="{{ url_for('booking') }}" class="btn btn-gold"><i class="fa-regular fa-calendar-check"></i> Book Your Appointment</a>
+          <a href="{{ url_for('services') }}" class="btn btn-outline"><i class="fa-solid fa-scissors"></i> View Services Menu</a>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Salon Pillars -->
+<!-- Our 4 Core Pillars of Excellence -->
 <section class="section-padding" style="background: var(--bg-soft);">
   <div class="container">
     <div class="section-header">
-      <div class="section-tag"><i class="fa-solid fa-gem"></i> Core Standards</div>
+      <div class="section-tag"><i class="fa-solid fa-award"></i> The Nature Standards</div>
       <h2 class="section-title">Our Pillars of Excellence</h2>
-      <p class="section-desc">We build every service around four unwavering principles of hospitality and hair craftsmanship.</p>
+      <p class="section-desc">Every treatment at Nature Unisex Salon is guided by four foundational commitments to quality, hygiene, and guest satisfaction.</p>
       <div class="title-divider"></div>
     </div>
 
-    <div class="services-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+    <div class="services-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem;">
+      
       <div class="review-card">
         <div class="contact-item-icon" style="background: rgba(15,46,33,0.1); color: var(--primary); width: 56px; height: 56px; font-size: 1.5rem; margin-bottom: 1.2rem;">
           <i class="fa-solid fa-user-check"></i>
         </div>
-        <h3 style="font-size: 1.35rem; margin-bottom: 0.6rem;">Personalised Styling</h3>
-        <p style="font-size: 0.88rem; color: var(--text-muted);">We take time for an in-depth consultation before any scissor touches your hair, assessing texture, facial contour, and maintenance preferences.</p>
+        <h3 style="font-size: 1.35rem; margin-bottom: 0.6rem; color: var(--primary);">Personalised Styling</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0;">We take time for an in-depth consultation before any scissor touches your hair, assessing texture, facial contour, lifestyle, and maintenance preferences.</p>
       </div>
 
       <div class="review-card">
         <div class="contact-item-icon" style="background: rgba(15,46,33,0.1); color: var(--primary); width: 56px; height: 56px; font-size: 1.5rem; margin-bottom: 1.2rem;">
           <i class="fa-solid fa-pump-medical"></i>
         </div>
-        <h3 style="font-size: 1.35rem; margin-bottom: 0.6rem;">Hygienic Environment</h3>
-        <p style="font-size: 0.88rem; color: var(--text-muted);">All scissors, combs, and blades undergo UV and autoclave sterilization. Single-use towels and neck strips ensure complete safety.</p>
+        <h3 style="font-size: 1.35rem; margin-bottom: 0.6rem; color: var(--primary);">Hygienic Environment</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0;">All scissors, combs, and blades undergo UV and autoclave sterilization. Single-use towels, capes, and neck strips ensure complete safety.</p>
       </div>
 
       <div class="review-card">
         <div class="contact-item-icon" style="background: rgba(15,46,33,0.1); color: var(--primary); width: 56px; height: 56px; font-size: 1.5rem; margin-bottom: 1.2rem;">
           <i class="fa-solid fa-hand-holding-heart"></i>
         </div>
-        <h3 style="font-size: 1.35rem; margin-bottom: 0.6rem;">Comfortable Experience</h3>
-        <p style="font-size: 0.88rem; color: var(--text-muted);">Enjoy ergonomic reclining massage chairs, peaceful acoustic tunes, and complimentary artisan herbal teas in an unhurried atmosphere.</p>
+        <h3 style="font-size: 1.35rem; margin-bottom: 0.6rem; color: var(--primary);">Comfortable Experience</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0;">Enjoy ergonomic reclining styling chairs, soothing background ambiance, and complimentary herbal refreshments in an unhurried setting.</p>
       </div>
 
       <div class="review-card">
         <div class="contact-item-icon" style="background: rgba(15,46,33,0.1); color: var(--primary); width: 56px; height: 56px; font-size: 1.5rem; margin-bottom: 1.2rem;">
           <i class="fa-solid fa-star-half-stroke"></i>
         </div>
-        <h3 style="font-size: 1.35rem; margin-bottom: 0.6rem;">Premium Quality Products</h3>
-        <p style="font-size: 0.88rem; color: var(--text-muted);">We exclusively curate certified salon-grade formulas, keratin therapies, and organic botanical skin extracts.</p>
+        <h3 style="font-size: 1.35rem; margin-bottom: 0.6rem; color: var(--primary);">Premium Quality Products</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0;">We curate certified salon-grade botanical formulations, keratin smoothening therapies, and organic dermatological skincare lines.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- The Salon Experience Journey (3 Steps) -->
+<section class="section-padding" style="background: var(--bg-main);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag"><i class="fa-solid fa-route"></i> Your Visit</div>
+      <h2 class="section-title">The Nature Salon Journey</h2>
+      <p class="section-desc">From the moment you walk through our doors, your care is personalized at every step.</p>
+      <div class="title-divider"></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+      <div style="background: var(--bg-card); padding: 2.5rem 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light); text-align: center; box-shadow: var(--shadow-sm);">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: var(--gold); display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; margin: 0 auto 1.2rem auto;">
+          1
+        </div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 0.6rem; color: var(--primary);">Consultation & Analysis</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0;">We assess your hair texture, scalp condition, or skin needs to recommend the ideal treatment and styling approach.</p>
+      </div>
+
+      <div style="background: var(--bg-card); padding: 2.5rem 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light); text-align: center; box-shadow: var(--shadow-sm);">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: var(--gold); display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; margin: 0 auto 1.2rem auto;">
+          2
+        </div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 0.6rem; color: var(--primary);">Artisan Crafting</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0;">Relax in comfortable massage chairs while our experienced specialists perform your haircut, facial, colour, or spa ritual.</p>
+      </div>
+
+      <div style="background: var(--bg-card); padding: 2.5rem 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light); text-align: center; box-shadow: var(--shadow-sm);">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: var(--gold); display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; margin: 0 auto 1.2rem auto;">
+          3
+        </div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 0.6rem; color: var(--primary);">Signature Finish</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0;">We complete your service with a professional blowout, texture style, and expert guidance on maintaining your look at home.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Call to Action Banner -->
-<section class="section-padding-sm" style="background: var(--primary); color: #ffffff; text-align: center;">
+<section class="section-padding-sm" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #ffffff; text-align: center;">
   <div class="container container-narrow">
-    <h2 style="color: #ffffff; margin-bottom: 1rem;">Experience Nature Unisex Salon</h2>
-    <p style="color: rgba(255,255,255,0.85); font-size: 1.1rem; margin-bottom: 2rem;">Book your personalised appointment today or drop by our salon for a friendly consultation.</p>
+    <span class="section-tag" style="background: rgba(197, 160, 89, 0.2); color: var(--gold-light);"><i class="fa-solid fa-spa"></i> Visit Us in Bengaluru</span>
+    <h2 style="color: #ffffff; margin-top: 0.5rem; margin-bottom: 1rem;">Experience Nature Unisex Salon</h2>
+    <p style="color: rgba(255,255,255,0.85); font-size: 1.1rem; margin-bottom: 2rem;">Book your appointment online or chat directly with our reception on WhatsApp.</p>
     <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
       <a href="{{ url_for('booking') }}" class="btn btn-gold btn-lg"><i class="fa-regular fa-calendar-check"></i> Book Appointment</a>
-      <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg"><i class="fa-solid fa-map-location-dot"></i> Visit Salon</a>
+      <a href="{{ whatsapp_chat_url }}" target="_blank" rel="noopener" class="btn btn-outline-light btn-lg"><i class="fa-brands fa-whatsapp"></i> Chat On WhatsApp</a>
+      <a href="{{ url_for('contact') }}" class="btn btn-outline-gold btn-lg"><i class="fa-solid fa-map-location-dot"></i> Get Directions</a>
     </div>
   </div>
 </section>
