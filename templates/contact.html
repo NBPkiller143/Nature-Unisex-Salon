@@ -82,9 +82,22 @@
       <div style="background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-md); padding: 3rem 2.5rem;">
         <span class="section-tag"><i class="fa-solid fa-message"></i> Send A Message</span>
         <h2 style="font-size: 2rem; margin-top: 0.3rem; margin-bottom: 0.5rem;">Customer Enquiry Form</h2>
-        <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 2rem;">Have a question about bridal packages, hair transformations, or group appointments? Fill in the form and we'll reply promptly.</p>
+        <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 2rem;">Have a question about bridal packages, hair transformations, or group appointments? Send directly via WhatsApp or submit to our salon reception.</p>
 
-        <form action="{{ url_for('contact') }}" method="POST">
+        {% if enquiry_submitted and enquiry_whatsapp_url %}
+          <div style="background: rgba(37, 211, 102, 0.08); border: 1px dashed #25d366; border-radius: var(--radius-md); padding: 1.75rem; text-align: center; margin-bottom: 2rem;">
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: #25d366; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 0.75rem auto;">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <h4 style="color: #166534; margin-bottom: 0.4rem; font-family: var(--font-body); font-weight: 700;">Enquiry Received!</h4>
+            <p style="font-size: 0.88rem; color: #15803d; margin-bottom: 1.25rem;">Click below to send your pre-filled enquiry directly to our salon reception on WhatsApp for fastest reply.</p>
+            <a href="{{ enquiry_whatsapp_url }}" target="_blank" rel="noopener" class="btn btn-gold btn-lg" style="background: #25d366; border-color: #25d366; color: #ffffff; width: 100%; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);">
+              <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> Continue on WhatsApp &rarr;
+            </a>
+          </div>
+        {% endif %}
+
+        <form action="{{ url_for('contact') }}" method="POST" id="customerEnquiryForm" data-wa-number="{{ settings.whatsapp_number if settings else '917483737517' }}">
           <div class="form-row">
             <div class="form-group">
               <label for="enquiryName" class="form-label">Your Name *</label>
@@ -109,12 +122,26 @@
 
           <div class="form-group">
             <label for="enquiryMessage" class="form-label">Your Message / Request *</label>
-            <textarea class="form-control" id="enquiryMessage" name="message" rows="5" required placeholder="How can Nature Unisex Salon assist you today?"></textarea>
+            <textarea class="form-control" id="enquiryMessage" name="message" rows="4" required placeholder="How can Nature Unisex Salon assist you today?"></textarea>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
-            <i class="fa-solid fa-paper-plane"></i> Send Enquiry Message
-          </button>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem;">
+            <!-- Primary Action: Direct WhatsApp Send -->
+            <button type="button" id="btnSendWhatsAppEnquiry" class="btn btn-gold btn-lg" style="background: #25d366; border-color: #25d366; color: #ffffff; width: 100%; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35); font-weight: 700;">
+              <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> Send Enquiry via WhatsApp
+            </button>
+
+            <!-- Secondary Action: Standard Web Submission -->
+            <button type="submit" class="btn btn-outline" style="width: 100%;">
+              <i class="fa-solid fa-paper-plane"></i> Submit to Reception Desk
+            </button>
+          </div>
+
+          <div style="text-align: center; margin-top: 1rem;">
+            <span style="font-size: 0.78rem; color: var(--text-muted);">
+              <i class="fa-brands fa-whatsapp text-success" style="color: #25d366;"></i> Instant WhatsApp response on salon number: {{ settings.phone if settings else '+91 74837 37517' }}
+            </span>
+          </div>
         </form>
       </div>
 

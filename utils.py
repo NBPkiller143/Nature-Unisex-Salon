@@ -83,3 +83,25 @@ def build_whatsapp_general_url(whatsapp_number, message="Hello Nature Unisex Sal
     encoded_message = urllib.parse.quote(message)
     return f"https://api.whatsapp.com/send?phone={clean_number}&text={encoded_message}"
 
+def build_whatsapp_enquiry_url(whatsapp_number, name, phone, subject="General Salon Inquiry", message=""):
+    """
+    Generates a pre-filled WhatsApp click-to-chat URL for customer enquiries.
+    """
+    clean_number = clean_phone_number(whatsapp_number)
+    
+    lines = [
+        "👋 Hello Nature Unisex Salon,",
+        "I would like to submit an enquiry:",
+        f"👤 *Name:* {name}",
+        f"📞 *Phone:* {phone}",
+        f"📌 *Subject:* {subject}",
+        f"💬 *Message:* {message}"
+    ]
+    lines.append("\nPlease let me know your recommendations. Thank you!")
+    
+    message_text = "\n".join(lines)
+    encoded_message = urllib.parse.quote(message_text)
+    
+    return f"https://api.whatsapp.com/send?phone={clean_number}&text={encoded_message}"
+
+

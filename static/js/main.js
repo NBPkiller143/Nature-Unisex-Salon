@@ -152,7 +152,73 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 6. Toast Notification auto-dismiss
+  // 6. Contact Enquiry Form - WhatsApp Direct Send Handler
+  const btnSendWhatsAppEnquiry = document.getElementById('btnSendWhatsAppEnquiry');
+  const customerEnquiryForm = document.getElementById('customerEnquiryForm');
+
+  if (btnSendWhatsAppEnquiry && customerEnquiryForm) {
+    btnSendWhatsAppEnquiry.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      const nameInput = document.getElementById('enquiryName');
+      const phoneInput = document.getElementById('enquiryPhone');
+      const emailInput = document.getElementById('enquiryEmail');
+      const subjectInput = document.getElementById('enquirySubject');
+      const messageInput = document.getElementById('enquiryMessage');
+
+      const name = nameInput?.value.trim() || '';
+      const phone = phoneInput?.value.trim() || '';
+      const email = emailInput?.value.trim() || '';
+      const subject = subjectInput?.value.trim() || 'General Salon Inquiry';
+      const message = messageInput?.value.trim() || '';
+
+      if (!name || !phone || !message) {
+        if (!name && nameInput) nameInput.focus();
+        else if (!phone && phoneInput) phoneInput.focus();
+        else if (!message && messageInput) messageInput.focus();
+        alert('Please provide your name, phone number, and enquiry message.');
+        return;
+      }
+
+      // 1. Asynchronously log enquiry to server so it's captured in admin portal
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('phone', phone);
+      formData.append('email', email);
+      formData.append('subject', subject);
+      formData.append('message', message);
+
+      fetch('/api/enquiry', {
+        method: 'POST',
+        body: formData
+      }).catch(err => console.log('Enquiry logged:', err));
+
+      // 2. Build pre-filled WhatsApp message
+      const waNumber = customerEnquiryForm.getAttribute('data-wa-number') || '917483737517';
+      const cleanNumber = waNumber.replace(/\D/g, '');
+
+      const lines = [
+        "👋 Hello Nature Unisex Salon,",
+        "I would like to submit an enquiry from your website:",
+        `👤 *Name:* ${name}`,
+        `📞 *Phone:* ${phone}`,
+        `📌 *Subject:* ${subject}`
+      ];
+      if (email) {
+        lines.push(`📧 *Email:* ${email}`);
+      }
+      lines.push(`💬 *Message:* ${message}`);
+      lines.push("\nPlease let me know your recommendations. Thank you!");
+
+      const waText = encodeURIComponent(lines.join("\n"));
+      const waUrl = `https://api.whatsapp.com/send?phone=${cleanNumber}&text=${waText}`;
+
+      // 3. Open WhatsApp in new tab / app
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+    });
+  }
+
+  // 7. Toast Notification auto-dismiss
   const toasts = document.querySelectorAll('.toast');
   toasts.forEach(toast => {
     setTimeout(() => {
@@ -163,3 +229,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 4500);
   });
 });
+

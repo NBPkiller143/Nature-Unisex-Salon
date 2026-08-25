@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from config import config
 from models import db, User, Service, Appointment, Gallery, Review, ContactEnquiry, WebsiteSetting
-from utils import save_uploaded_image, build_whatsapp_booking_url, build_whatsapp_general_url, clean_phone_number
+from utils import save_uploaded_image, build_whatsapp_booking_url, build_whatsapp_general_url, build_whatsapp_enquiry_url, clean_phone_number
 from seed_data import seed_database
 
 def create_app(config_name=None):
@@ -189,11 +189,14 @@ def create_app(config_name=None):
     @app.route('/contact', methods=['GET', 'POST'])
     def contact():
         """Contact page with salon location, hours, and enquiry form."""
+        settings = WebsiteSetting.get_settings()
+        enquiry_whatsapp_url = None
+        
         if request.method == 'POST':
             name = request.form.get('name', '').strip()
             phone = request.form.get('phone', '').strip()
             email = request.form.get('email', '').strip()
-            subject = request.form.get('subject', 'Salon Inquiry').strip()
+            subject = request.form.get('subject', 'General Salon Inquiry').strip()
             message = request.form.get('message', '').strip()
             
             if not name or not phone or not message:
@@ -210,10 +213,57 @@ def create_app(config_name=None):
             db.session.add(enquiry)
             db.session.commit()
             
-            flash('Thank you for getting in touch! We have received your inquiry and will contact you shortly.', 'success')
-            return redirect(url_for('contact'))
+            enquiry_whatsapp_url = build_whatsapp_enquiry_url(
+                whatsapp_number=settings.whatsapp_number if settings else '917483737517',
+                name=name,
+                phone=phone,
+                subject=subject,
+                message=message
+            )
+            
+            flash('Thank you for getting in touch! We have received your inquiry. You can also send it directly via WhatsApp below.', 'success')
+            return render_template('contact.html', enquiry_submitted=True, enquiry_whatsapp_url=enquiry_whatsapp_url)
             
         return render_template('contact.html')
+
+    @app.route('/api/enquiry', methods=['POST'])
+    def api_enquiry():
+        """AJAX endpoint for instant enquiry submission and WhatsApp link generation."""
+        data = request.get_json() or request.form
+        name = data.get('name', '').strip()
+        phone = data.get('phone', '').strip()
+        email = data.get('email', '').strip()
+        subject = data.get('subject', 'General Salon Inquiry').strip()
+        message = data.get('message', '').strip()
+        
+        if not name or not phone or not message:
+            return jsonify({'success': False, 'message': 'Please fill all required fields (Name, Phone, Message).'}), 400
+            
+        enquiry = ContactEnquiry(
+            name=name,
+            phone=phone,
+            email=email,
+            subject=subject,
+            message=message
+        )
+        db.session.add(enquiry)
+        db.session.commit()
+        
+        settings = WebsiteSetting.get_settings()
+        whatsapp_url = build_whatsapp_enquiry_url(
+            whatsapp_number=settings.whatsapp_number if settings else '917483737517',
+            name=name,
+            phone=phone,
+            subject=subject,
+            message=message
+        )
+        
+        return jsonify({
+            'success': True,
+            'message': 'Your enquiry has been logged successfully.',
+            'whatsapp_url': whatsapp_url
+        })
+
 
     @app.route('/booking', methods=['GET', 'POST'])
     def booking():
