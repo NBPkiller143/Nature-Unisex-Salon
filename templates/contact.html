@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us & Directions | {{ settings.salon_name if settings else 'Nature Unisex Salon' }}{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero Header -->
+<section class="section-padding-sm" style="background: linear-gradient(rgba(15,46,33,0.85), rgba(15,46,33,0.9)), url('{{ url_for('static', filename='images/hero_salon.jpg') }}') center/cover; color: #ffffff; text-align: center;">
+  <div class="container">
+    <div class="section-tag" style="background: rgba(197, 160, 89, 0.2); color: var(--gold-light);"><i class="fa-solid fa-location-dot"></i> Visit Our Salon</div>
+    <h1 style="color: #ffffff; margin-bottom: 0.8rem;">Get in Touch & Find Us</h1>
+    <p style="color: rgba(255,255,255,0.85); max-width: 620px; margin: 0 auto; font-size: 1.1rem;">We're always delighted to answer your questions, consult on hair & beauty plans, and welcome you to our space.</p>
+  </div>
+</section>
+
+<!-- Contact Details & Form Section -->
+<section class="section-padding" style="background: var(--bg-main);">
+  <div class="container">
+    <div class="contact-grid">
+      
+      <!-- Left Column: Contact Information -->
+      <div class="contact-info-card">
+        <span class="section-tag" style="background: rgba(197, 160, 89, 0.2); color: var(--gold-light);"><i class="fa-solid fa-phone-volume"></i> Salon Reception</span>
+        <h3 style="color: #ffffff;">Contact Information</h3>
+        <p style="color: rgba(255,255,255,0.8); margin-bottom: 2rem;">Drop by during opening hours or connect with our guest desk for queries, bridal bookings, and custom appointments.</p>
+
+        <div class="contact-item">
+          <div class="contact-item-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <div class="contact-item-text">
+            <h5>Salon Address</h5>
+            <p>{{ settings.address if settings else 'Nature Unisex Salon, Austin Town / Neelasandra, Bengaluru, Karnataka 560047, India' }}</p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-item-icon"><i class="fa-solid fa-phone"></i></div>
+          <div class="contact-item-text">
+            <h5>Phone Call</h5>
+            <p><a href="tel:{{ settings.phone if settings else '+917483737517' }}" style="color: #ffffff; text-decoration: underline;">{{ settings.phone if settings else '+91 74837 37517' }}</a></p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-item-icon" style="background: rgba(37,211,102,0.25); color: #25d366;"><i class="fa-brands fa-whatsapp"></i></div>
+          <div class="contact-item-text">
+            <h5>WhatsApp Chat</h5>
+            <p><a href="{{ whatsapp_chat_url }}" target="_blank" rel="noopener" style="color: #25d366; font-weight: 700; text-decoration: underline;">Chat Directly on WhatsApp &rarr;</a></p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-item-icon"><i class="fa-solid fa-envelope"></i></div>
+          <div class="contact-item-text">
+            <h5>Email Support</h5>
+            <p><a href="mailto:{{ settings.email if settings else 'info@natureunisexsalon.com' }}" style="color: #ffffff;">{{ settings.email if settings else 'info@natureunisexsalon.com' }}</a></p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-item-icon"><i class="fa-solid fa-clock"></i></div>
+          <div class="contact-item-text">
+            <h5>Opening Hours</h5>
+            <p>{{ settings.opening_hours_weekdays if settings else 'Mon - Sat: 9:00 AM - 9:00 PM' }}</p>
+            <p style="margin-top: 0.2rem;">{{ settings.opening_hours_weekends if settings else 'Sun: 10:00 AM - 8:00 PM' }}</p>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <a href="{{ settings.google_maps_url if settings else '#' }}" target="_blank" rel="noopener" class="btn btn-gold" style="width: 100%;">
+            <i class="fa-solid fa-diamond-turn-right"></i> Open In Google Maps / Get Directions
+          </a>
+        </div>
+
+        <!-- Embedded Map -->
+        <div class="map-container">
+          <iframe src="{{ settings.google_maps_embed if settings and settings.google_maps_embed else 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3504.6053337929424!2d77.3209553!3d28.566587!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce45049963e63%3A0x6b1070624cbef218!2sSector%2018%2C%20Noida%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin' }}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Salon Location"></iframe>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Enquiry Form -->
+      <div style="background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-md); padding: 3rem 2.5rem;">
+        <span class="section-tag"><i class="fa-solid fa-message"></i> Send A Message</span>
+        <h2 style="font-size: 2rem; margin-top: 0.3rem; margin-bottom: 0.5rem;">Customer Enquiry Form</h2>
+        <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 2rem;">Have a question about bridal packages, hair transformations, or group appointments? Fill in the form and we'll reply promptly.</p>
+
+        <form action="{{ url_for('contact') }}" method="POST">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="enquiryName" class="form-label">Your Name *</label>
+              <input type="text" class="form-control" id="enquiryName" name="name" required placeholder="e.g. Ananya Sen">
+            </div>
+            <div class="form-group">
+              <label for="enquiryPhone" class="form-label">Phone Number *</label>
+              <input type="tel" class="form-control" id="enquiryPhone" name="phone" required placeholder="e.g. +91 98765 43210">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="enquiryEmail" class="form-label">Email Address (Optional)</label>
+              <input type="email" class="form-control" id="enquiryEmail" name="email" placeholder="e.g. ananya@example.com">
+            </div>
+            <div class="form-group">
+              <label for="enquirySubject" class="form-label">Subject</label>
+              <input type="text" class="form-control" id="enquirySubject" name="subject" value="General Salon Inquiry">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="enquiryMessage" class="form-label">Your Message / Request *</label>
+            <textarea class="form-control" id="enquiryMessage" name="message" rows="5" required placeholder="How can Nature Unisex Salon assist you today?"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            <i class="fa-solid fa-paper-plane"></i> Send Enquiry Message
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

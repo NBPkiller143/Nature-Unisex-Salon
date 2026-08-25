@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin Portal | Nature Unisex Salon{% endblock %}</title>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Admin Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Admin Sidebar Navigation -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <h3>{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</h3>
+        <span>Admin Portal</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('admin_dashboard') }}" class="nav-item-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="{{ url_for('admin_appointments') }}" class="nav-item-link {% if request.endpoint == 'admin_appointments' %}active{% endif %}">
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>Appointments</span>
+      </a>
+      <a href="{{ url_for('admin_services') }}" class="nav-item-link {% if request.endpoint == 'admin_services' %}active{% endif %}">
+        <i class="fa-solid fa-scissors"></i>
+        <span>Services Menu</span>
+      </a>
+      <a href="{{ url_for('admin_gallery') }}" class="nav-item-link {% if request.endpoint == 'admin_gallery' %}active{% endif %}">
+        <i class="fa-solid fa-images"></i>
+        <span>Gallery & Media</span>
+      </a>
+      <a href="{{ url_for('admin_reviews') }}" class="nav-item-link {% if request.endpoint == 'admin_reviews' %}active{% endif %}">
+        <i class="fa-solid fa-star"></i>
+        <span>Customer Reviews</span>
+      </a>
+      <a href="{{ url_for('admin_enquiries') }}" class="nav-item-link {% if request.endpoint == 'admin_enquiries' %}active{% endif %}">
+        <i class="fa-solid fa-envelope-open-text"></i>
+        <span>Contact Enquiries</span>
+      </a>
+      <a href="{{ url_for('admin_settings') }}" class="nav-item-link {% if request.endpoint == 'admin_settings' %}active{% endif %}">
+        <i class="fa-solid fa-sliders"></i>
+        <span>Website Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info-pill">
+        <div class="user-avatar">{{ current_user.username[0].upper() if current_user.is_authenticated else 'A' }}</div>
+        <div class="user-details">
+          <h5>{{ current_user.username if current_user.is_authenticated else 'Administrator' }}</h5>
+          <p>{{ current_user.email if current_user.is_authenticated else 'admin@nature' }}</p>
+        </div>
+      </div>
+      <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+        <a href="{{ url_for('index') }}" target="_blank" class="btn-action" style="flex: 1; justify-content: center; background: rgba(255,255,255,0.08); color: #ffffff; border: none;">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Site
+        </a>
+        <a href="{{ url_for('admin_logout') }}" class="btn-action delete" style="flex: 1; justify-content: center; background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: none;">
+          <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Workspace -->
+  <main class="admin-main">
+    
+    <!-- Top Header Bar -->
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <button id="sidebarToggle" class="btn-action" style="display: none;" aria-label="Toggle Sidebar">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="topbar-title">
+          <h2>{% block page_title %}Dashboard Overview{% endblock %}</h2>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <a href="{{ url_for('index') }}" target="_blank" class="btn-action">
+          <i class="fa-solid fa-globe"></i> View Public Website
+        </a>
+        <a href="{{ url_for('admin_logout') }}" class="btn-action delete">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </header>
+
+    <!-- Admin Body -->
+    <div class="admin-body">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div style="padding: 1rem 1.25rem; margin-bottom: 1.5rem; border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 0.75rem; {% if category == 'success' %}background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;{% elif category == 'error' %}background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;{% else %}background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;{% endif %}">
+              <i class="fa-solid {% if category == 'success' %}fa-circle-check{% elif category == 'error' %}fa-circle-exclamation{% else %}fa-circle-info{% endif %}"></i>
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block admin_content %}{% endblock %}
+    </div>
+
+  </main>
+
+  <!-- Admin JavaScript -->
+  <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+  {% block extra_admin_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Our Services | {{ settings.salon_name if settings else 'Nature Unisex Salon' }}{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero Header -->
+<section class="section-padding-sm" style="background: linear-gradient(rgba(15,46,33,0.85), rgba(15,46,33,0.9)), url('{{ url_for('static', filename='images/hero_salon.jpg') }}') center/cover; color: #ffffff; text-align: center;">
+  <div class="container">
+    <div class="section-tag" style="background: rgba(197, 160, 89, 0.2); color: var(--gold-light);"><i class="fa-solid fa-scissors"></i> Treatment Menu</div>
+    <h1 style="color: #ffffff; margin-bottom: 0.8rem;">Salon Services & Rituals</h1>
+    <p style="color: rgba(255,255,255,0.85); max-width: 620px; margin: 0 auto; font-size: 1.1rem;">Explore our comprehensive range of hair, beauty, and grooming treatments for men and women.</p>
+  </div>
+</section>
+
+<!-- Filter Controls & Catalog -->
+<section class="section-padding" style="background: var(--bg-main);">
+  <div class="container">
+    
+    <!-- Gender Filter Buttons -->
+    <div style="display: flex; justify-content: center; gap: 0.8rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+      <a href="{{ url_for('services', gender='all', category=active_category) }}" class="btn {% if active_gender == 'all' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">
+        All Clients
+      </a>
+      <a href="{{ url_for('services', gender='Men', category=active_category) }}" class="btn {% if active_gender == 'Men' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">
+        <i class="fa-solid fa-person"></i> Men's Services
+      </a>
+      <a href="{{ url_for('services', gender='Women', category=active_category) }}" class="btn {% if active_gender == 'Women' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">
+        <i class="fa-solid fa-person-dress"></i> Women's Services
+      </a>
+    </div>
+
+    <!-- Category Filter Pills -->
+    <div class="service-filters" style="margin-bottom: 3.5rem;">
+      <a href="{{ url_for('services', gender=active_gender, category='all') }}" class="filter-btn {% if active_category == 'all' %}active{% endif %}">
+        All Categories
+      </a>
+      {% for cat in categories %}
+        <a href="{{ url_for('services', gender=active_gender, category=cat) }}" class="filter-btn {% if active_category == cat %}active{% endif %}">
+          {{ cat }}
+        </a>
+      {% endfor %}
+    </div>
+
+    <!-- Services Grid -->
+    {% if services %}
+      <div class="services-grid">
+        {% for service in services %}
+          <div class="service-card">
+            <div class="service-img-wrapper">
+              <img src="{{ service.image_url or url_for('static', filename='images/about_salon.jpg') }}" alt="{{ service.name }}" class="service-img" loading="lazy">
+              <span class="service-gender-tag">{{ service.gender_target }}</span>
+              <span class="service-duration-tag"><i class="fa-regular fa-clock"></i> {{ service.formatted_duration() }}</span>
+            </div>
+            <div class="service-body">
+              <div class="service-cat">{{ service.category }}</div>
+              <h3 class="service-name">{{ service.name }}</h3>
+              <p class="service-desc">{{ service.description }}</p>
+              <div class="service-footer">
+                <span class="service-price">{{ service.formatted_price(settings.currency_symbol if settings else '₹') }}</span>
+                <a href="{{ url_for('booking', service_id=service.id) }}" class="btn btn-primary btn-sm">
+                  Book Slot <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 4rem 1rem; background: var(--bg-card); border-radius: var(--radius-md); border: 1px dashed var(--border-light);">
+        <i class="fa-solid fa-scissors" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+        <h3>No services found in this category</h3>
+        <p>Try selecting another filter or reset filters to see all available treatments.</p>
+        <a href="{{ url_for('services') }}" class="btn btn-primary btn-sm" style="margin-top: 1rem;">Reset Filters</a>
+      </div>
+    {% endif %}
+
+    <!-- Custom Consultation Note -->
+    <div style="margin-top: 4rem; background: var(--bg-soft); border-radius: var(--radius-lg); padding: 2.5rem; text-align: center; border: 1px solid var(--border-light);">
+      <h3 style="margin-bottom: 0.6rem;">Looking for a Bespoke Package or Bridal Party?</h3>
+      <p style="max-width: 680px; margin: 0 auto 1.5rem auto;">We customize personalized pre-wedding, event styling, and group packages tailored to your schedule and preferences.</p>
+      <a href="{{ whatsapp_chat_url }}" target="_blank" rel="noopener" class="btn btn-gold">
+        <i class="fa-brands fa-whatsapp"></i> Inquire for Custom Packages on WhatsApp
+      </a>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

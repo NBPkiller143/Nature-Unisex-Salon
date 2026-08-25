@@ -1,0 +1,92 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gallery Media Management | Nature Unisex Salon Admin{% endblock %}
+{% block page_title %}Gallery & Media Management{% endblock %}
+
+{% block admin_content %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h3 style="font-size: 1.25rem;">Salon Portfolio Showcase</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0;">Upload and organize high-resolution photos of hairstyles, makeup transformations, and salon interiors.</p>
+  </div>
+  <button type="button" class="btn-action" style="background: var(--admin-primary); color: #ffffff; padding: 0.65rem 1.25rem; font-weight: 600;" onclick="openModal('addGalleryModal')">
+    <i class="fa-solid fa-plus"></i> Upload New Media
+  </button>
+</div>
+
+<!-- Gallery Grid in Admin -->
+<div class="admin-card" style="padding: 2rem;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem;">
+    {% for item in gallery_items %}
+      <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; background: #ffffff; box-shadow: var(--shadow-card);">
+        <div style="height: 180px; overflow: hidden; position: relative;">
+          <img src="{{ item.image_url }}" alt="{{ item.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+          <span class="badge" style="position: absolute; top: 0.5rem; left: 0.5rem; background: rgba(15,46,33,0.85); color: #ffffff; font-size: 0.72rem;">
+            {{ item.category }}
+          </span>
+        </div>
+        <div style="padding: 1rem;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">{{ item.title }}</h4>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem;">Added: {{ item.created_at.strftime('%d %b %Y') }}</p>
+          
+          <form action="{{ url_for('admin_delete_gallery_item', item_id=item.id) }}" method="POST" onsubmit="return confirm('Remove this image from gallery?');">
+            <button type="submit" class="btn-action delete" style="width: 100%; justify-content: center;">
+              <i class="fa-solid fa-trash-can"></i> Delete Image
+            </button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
+        No gallery items found. Click "Upload New Media" to add your first photo.
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Upload Gallery Modal -->
+<div class="admin-modal" id="addGalleryModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Upload Gallery Image</h3>
+      <button class="modal-close" onclick="closeModal('addGalleryModal')">&times;</button>
+    </div>
+    <form action="{{ url_for('admin_add_gallery_item') }}" method="POST" enctype="multipart/form-data">
+      <div class="modal-body">
+        
+        <div class="admin-form-group">
+          <label class="admin-form-label">Photo Title / Caption *</label>
+          <input type="text" name="title" class="admin-form-control" required placeholder="e.g. Honey Blonde Balayage & Blowout">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Category *</label>
+          <select name="category" class="admin-form-control" required>
+            {% for cat in categories %}
+              <option value="{{ cat }}">{{ cat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Select Image File (Upload from device) *</label>
+          <input type="file" name="image_file" accept="image/*" class="admin-form-control image-upload-input" data-preview-target="galleryUploadPreview">
+          <img id="galleryUploadPreview" src="" alt="Preview" style="display: none; width: 100%; height: 160px; object-fit: cover; margin-top: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Or Image URL (Alternative)</label>
+          <input type="url" name="image_url" class="admin-form-control" placeholder="https://example.com/photo.jpg">
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action" onclick="closeModal('addGalleryModal')">Cancel</button>
+        <button type="submit" class="btn-action" style="background: var(--admin-primary); color: #ffffff;">Upload & Publish</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

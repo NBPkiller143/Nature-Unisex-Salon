@@ -1,0 +1,142 @@
+/**
+ * Nature Unisex Salon - Public Master JavaScript
+ * Handles navigation, interactive filters, gallery lightbox, and booking flow.
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Sticky Navigation on Scroll
+  const navbar = document.querySelector('.navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) {
+      navbar?.classList.add('scrolled');
+    } else {
+      navbar?.classList.remove('scrolled');
+    }
+  });
+
+  // 2. Mobile Menu Toggle
+  const mobileToggle = document.querySelector('.mobile-toggle');
+  const navLinks = document.querySelector('.nav-links');
+  if (mobileToggle && navLinks) {
+    mobileToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      const icon = mobileToggle.querySelector('i');
+      if (icon) {
+        if (navLinks.classList.contains('active')) {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-xmark');
+        } else {
+          icon.classList.remove('fa-xmark');
+          icon.classList.add('fa-bars');
+        }
+      }
+    });
+
+    // Close menu when clicking a link
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        const icon = mobileToggle.querySelector('i');
+        if (icon) {
+          icon.classList.remove('fa-xmark');
+          icon.classList.add('fa-bars');
+        }
+      });
+    });
+  }
+
+  // 3. Client-Side Service Catalog Filtering (Instant Filter)
+  const filterButtons = document.querySelectorAll('.service-filter-btn');
+  const serviceCards = document.querySelectorAll('.service-card-item');
+
+  if (filterButtons.length > 0 && serviceCards.length > 0) {
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const gender = btn.getAttribute('data-gender') || 'all';
+        const category = btn.getAttribute('data-category') || 'all';
+
+        serviceCards.forEach(card => {
+          const cardGender = card.getAttribute('data-gender');
+          const cardCat = card.getAttribute('data-category');
+
+          const matchGender = (gender === 'all') || (cardGender === gender) || (cardGender === 'Unisex');
+          const matchCat = (category === 'all') || (cardCat === category);
+
+          if (matchGender && matchCat) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  }
+
+  // 4. Gallery Lightbox Modal
+  const lightbox = document.getElementById('galleryLightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxCaption = document.getElementById('lightboxCaption');
+  const lightboxClose = document.querySelector('.lightbox-close');
+
+  document.querySelectorAll('.gallery-card').forEach(item => {
+    item.addEventListener('click', () => {
+      const src = item.getAttribute('data-image');
+      const caption = item.getAttribute('data-caption');
+      if (lightbox && lightboxImg) {
+        lightboxImg.src = src;
+        if (lightboxCaption) lightboxCaption.textContent = caption || '';
+        lightbox.classList.add('active');
+      }
+    });
+  });
+
+  if (lightboxClose) {
+    lightboxClose.addEventListener('click', () => {
+      lightbox.classList.remove('active');
+    });
+  }
+
+  if (lightbox) {
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) {
+        lightbox.classList.remove('active');
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightbox && lightbox.classList.contains('active')) {
+      lightbox.classList.remove('active');
+    }
+  });
+
+  // 5. Booking Form - Dynamic WhatsApp link generator helper
+  const bookingForm = document.getElementById('appointmentBookingForm');
+  const serviceSelect = document.getElementById('serviceSelect');
+  const dateInput = document.getElementById('appointmentDate');
+  const timeInput = document.getElementById('appointmentTime');
+  const nameInput = document.getElementById('customerName');
+
+  // Set minimum date for booking to today
+  if (dateInput) {
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
+    if (!dateInput.value) {
+      dateInput.value = today;
+    }
+  }
+
+  // 6. Toast Notification auto-dismiss
+  const toasts = document.querySelectorAll('.toast');
+  toasts.forEach(toast => {
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(100%)';
+      toast.style.transition = 'all 0.4s ease';
+      setTimeout(() => toast.remove(), 400);
+    }, 4500);
+  });
+});

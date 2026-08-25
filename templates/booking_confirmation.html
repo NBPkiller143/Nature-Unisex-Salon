@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Confirmation | {{ settings.salon_name if settings else 'Nature Unisex Salon' }}{% endblock %}
+
+{% block content %}
+
+<section class="section-padding" style="background: var(--bg-main);">
+  <div class="container container-narrow">
+    <div style="background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-lg); padding: 3.5rem 2.5rem; text-align: center;">
+      
+      <!-- Success Animated Icon -->
+      <div style="width: 80px; height: 80px; border-radius: 50%; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem auto; border: 2px solid #a7f3d0;">
+        <i class="fa-solid fa-check"></i>
+      </div>
+
+      <span class="section-tag" style="background: #ecfdf5; color: #047857;"><i class="fa-solid fa-circle-check"></i> Request Received</span>
+      <h1 style="font-size: 2.4rem; margin-top: 0.5rem; margin-bottom: 1rem;">Thank You, {{ appointment.customer_name }}!</h1>
+      <p style="font-size: 1.1rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 2rem auto; line-height: 1.6;">
+        Your appointment request has been received. <strong>{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</strong> will contact you shortly to confirm your booking.
+      </p>
+
+      <!-- Appointment Summary Card -->
+      <div style="background: var(--bg-soft); border-radius: var(--radius-md); border: 1px solid var(--border-light); padding: 2rem; max-width: 520px; margin: 0 auto 2.5rem auto; text-align: left;">
+        <h4 style="font-size: 1.15rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.8rem; margin-bottom: 1.2rem; color: var(--primary);">
+          <i class="fa-solid fa-receipt text-gold" style="margin-right: 0.4rem;"></i> Booking Summary
+        </h4>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+          <span style="color: var(--text-muted);">Booking Reference:</span>
+          <strong>#NAT-{{ appointment.id }}</strong>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+          <span style="color: var(--text-muted);">Service:</span>
+          <strong>{{ appointment.service_name }}</strong>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+          <span style="color: var(--text-muted);">Date & Time:</span>
+          <strong>{{ appointment.appointment_date }} at {{ appointment.appointment_time }}</strong>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+          <span style="color: var(--text-muted);">Mobile Number:</span>
+          <strong>{{ appointment.phone }}</strong>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-size: 0.95rem;">
+          <span style="color: var(--text-muted);">Initial Status:</span>
+          <span class="badge badge-pending">Pending Confirmation</span>
+        </div>
+      </div>
+
+      <!-- WhatsApp Quick Confirmation Button -->
+      <div style="background: rgba(37, 211, 102, 0.08); border: 1px dashed #25d366; border-radius: var(--radius-md); padding: 1.5rem; max-width: 520px; margin: 0 auto 2.5rem auto;">
+        <h4 style="font-family: var(--font-body); font-size: 1rem; color: #166534; margin-bottom: 0.4rem;">Want faster priority confirmation?</h4>
+        <p style="font-size: 0.85rem; color: #15803d; margin-bottom: 1rem;">Click below to send your pre-filled appointment details directly to our salon reception on WhatsApp.</p>
+        <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="btn btn-gold" style="background: #25d366; border-color: #25d366; color: #ffffff; width: 100%; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);">
+          <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Continue on WhatsApp
+        </a>
+      </div>
+
+      <!-- Secondary Links -->
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="{{ url_for('index') }}" class="btn btn-outline"><i class="fa-solid fa-house"></i> Return Home</a>
+        <a href="{{ url_for('services') }}" class="btn btn-outline-gold"><i class="fa-solid fa-scissors"></i> Explore More Services</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Salon Gallery | {{ settings.salon_name if settings else 'Nature Unisex Salon' }}{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero Header -->
+<section class="section-padding-sm" style="background: linear-gradient(rgba(15,46,33,0.85), rgba(15,46,33,0.9)), url('{{ url_for('static', filename='images/hero_salon.jpg') }}') center/cover; color: #ffffff; text-align: center;">
+  <div class="container">
+    <div class="section-tag" style="background: rgba(197, 160, 89, 0.2); color: var(--gold-light);"><i class="fa-solid fa-camera"></i> Visual Portfolio</div>
+    <h1 style="color: #ffffff; margin-bottom: 0.8rem;">Salon Atmosphere & Transformations</h1>
+    <p style="color: rgba(255,255,255,0.85); max-width: 620px; margin: 0 auto; font-size: 1.1rem;">Explore our latest haircuts, beard trims, vibrant hair colors, bridal styles, and calming salon interiors.</p>
+  </div>
+</section>
+
+<!-- Gallery Filter & Grid -->
+<section class="section-padding" style="background: var(--bg-main);">
+  <div class="container">
+
+    <!-- Category Filters -->
+    <div class="service-filters" style="margin-bottom: 3rem;">
+      {% for cat in categories %}
+        <a href="{{ url_for('gallery', category=cat if cat != 'All' else 'all') }}" class="filter-btn {% if (cat == 'All' and active_category == 'all') or (cat == active_category) %}active{% endif %}">
+          {{ cat }}
+        </a>
+      {% endfor %}
+    </div>
+
+    <!-- Image Grid -->
+    {% if gallery_items %}
+      <div class="gallery-grid">
+        {% for item in gallery_items %}
+          <div class="gallery-card" data-image="{{ item.image_url }}" data-caption="{{ item.title }} ({{ item.category }})">
+            <img src="{{ item.image_url }}" alt="{{ item.title }}" class="gallery-img" loading="lazy">
+            <div class="gallery-overlay">
+              <span>{{ item.category }}</span>
+              <h4>{{ item.title }}</h4>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 4rem 1rem; background: var(--bg-card); border-radius: var(--radius-md); border: 1px dashed var(--border-light);">
+        <i class="fa-solid fa-camera-retro" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+        <h3>No photos found in this category</h3>
+        <p>Try exploring another category or check back soon for fresh updates!</p>
+        <a href="{{ url_for('gallery') }}" class="btn btn-primary btn-sm" style="margin-top: 1rem;">View All Photos</a>
+      </div>
+    {% endif %}
+
+    <!-- Instagram Feature Banner -->
+    <div style="margin-top: 4.5rem; background: var(--bg-soft); border-radius: var(--radius-lg); padding: 3rem 2rem; text-align: center; border: 1px solid var(--border-light);">
+      <div class="contact-item-icon" style="background: rgba(197, 160, 89, 0.2); color: var(--gold-dark); margin: 0 auto 1.2rem auto; width: 60px; height: 60px; font-size: 1.6rem;">
+        <i class="fa-brands fa-instagram"></i>
+      </div>
+      <h3 style="margin-bottom: 0.6rem;">Follow Our Daily Transformations</h3>
+      <p style="max-width: 600px; margin: 0 auto 1.5rem auto;">Tag <strong>#NatureUnisexSalon</strong> on Instagram to be featured on our official showcase page.</p>
+      {% if settings and settings.instagram_url %}
+        <a href="{{ settings.instagram_url }}" target="_blank" rel="noopener" class="btn btn-primary">
+          <i class="fa-brands fa-instagram"></i> Visit @NatureUnisexSalon on Instagram
+        </a>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div class="lightbox-modal" id="galleryLightbox">
+  <div class="lightbox-content">
+    <button class="lightbox-close" aria-label="Close Lightbox">&times;</button>
+    <img src="" alt="Gallery Preview" class="lightbox-img" id="lightboxImg">
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+</div>
+
+{% endblock %}

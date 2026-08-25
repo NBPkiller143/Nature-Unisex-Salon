@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Pricing & Packages | {{ settings.salon_name if settings else 'Nature Unisex Salon' }}{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero Header -->
+<section class="section-padding-sm" style="background: linear-gradient(rgba(15,46,33,0.85), rgba(15,46,33,0.9)), url('{{ url_for('static', filename='images/hero_salon.jpg') }}') center/cover; color: #ffffff; text-align: center;">
+  <div class="container">
+    <div class="section-tag" style="background: rgba(197, 160, 89, 0.2); color: var(--gold-light);"><i class="fa-solid fa-tag"></i> Transparent Rates</div>
+    <h1 style="color: #ffffff; margin-bottom: 0.8rem;">Salon Rate Card & Packages</h1>
+    <p style="color: rgba(255,255,255,0.85); max-width: 620px; margin: 0 auto; font-size: 1.1rem;">Honest, transparent pricing with no hidden charges. All services include complimentary hair consultation.</p>
+  </div>
+</section>
+
+<!-- Pricing Tables -->
+<section class="section-padding" style="background: var(--bg-main);">
+  <div class="container container-narrow">
+
+    <!-- Men's Services Table Card -->
+    <div class="pricing-table-card">
+      <div class="pricing-category-title">
+        <div>
+          <span class="section-tag" style="margin-bottom: 0.2rem;"><i class="fa-solid fa-person"></i> For Gentlemen</span>
+          <h2 style="font-size: 1.85rem; margin-top: 0.2rem;">Men's Grooming & Styling</h2>
+        </div>
+        <a href="{{ url_for('booking') }}" class="btn btn-outline btn-sm">Book Any Men's Slot</a>
+      </div>
+
+      <div class="pricing-list">
+        {% for svc in men_services %}
+          <div class="pricing-row">
+            <div class="pricing-info">
+              <h4>{{ svc.name }}</h4>
+              <p>{{ svc.description }} <span style="color: var(--gold-dark); font-weight: 600; margin-left: 0.5rem;">⏱ {{ svc.formatted_duration() }}</span></p>
+            </div>
+            <div class="pricing-action">
+              <span class="pricing-amount">{{ svc.formatted_price(settings.currency_symbol if settings else '₹') }}</span>
+              <a href="{{ url_for('booking', service_id=svc.id) }}" class="btn btn-primary btn-sm">Book</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Women's Services Table Card -->
+    <div class="pricing-table-card">
+      <div class="pricing-category-title">
+        <div>
+          <span class="section-tag" style="margin-bottom: 0.2rem;"><i class="fa-solid fa-person-dress"></i> For Ladies</span>
+          <h2 style="font-size: 1.85rem; margin-top: 0.2rem;">Women's Hair & Beauty Menu</h2>
+        </div>
+        <a href="{{ url_for('booking') }}" class="btn btn-outline btn-sm">Book Any Women's Slot</a>
+      </div>
+
+      <div class="pricing-list">
+        {% for svc in women_services %}
+          <div class="pricing-row">
+            <div class="pricing-info">
+              <h4>{{ svc.name }}</h4>
+              <p>{{ svc.description }} <span style="color: var(--gold-dark); font-weight: 600; margin-left: 0.5rem;">⏱ {{ svc.formatted_duration() }}</span></p>
+            </div>
+            <div class="pricing-action">
+              <span class="pricing-amount">{{ svc.formatted_price(settings.currency_symbol if settings else '₹') }}</span>
+              <a href="{{ url_for('booking', service_id=svc.id) }}" class="btn btn-primary btn-sm">Book</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Unisex / Spa Services Table Card -->
+    {% if unisex_services %}
+      <div class="pricing-table-card">
+        <div class="pricing-category-title">
+          <div>
+            <span class="section-tag" style="margin-bottom: 0.2rem;"><i class="fa-solid fa-spa"></i> Unisex & Wellness</span>
+            <h2 style="font-size: 1.85rem; margin-top: 0.2rem;">Relaxation & Skin Care</h2>
+          </div>
+          <a href="{{ url_for('booking') }}" class="btn btn-outline btn-sm">Book Slot</a>
+        </div>
+
+        <div class="pricing-list">
+          {% for svc in unisex_services %}
+            <div class="pricing-row">
+              <div class="pricing-info">
+                <h4>{{ svc.name }}</h4>
+                <p>{{ svc.description }} <span style="color: var(--gold-dark); font-weight: 600; margin-left: 0.5rem;">⏱ {{ svc.formatted_duration() }}</span></p>
+              </div>
+              <div class="pricing-action">
+                <span class="pricing-amount">{{ svc.formatted_price(settings.currency_symbol if settings else '₹') }}</span>
+                <a href="{{ url_for('booking', service_id=svc.id) }}" class="btn btn-primary btn-sm">Book</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Value Packages Table Card -->
+    {% if packages %}
+      <div class="pricing-table-card" style="border-top: 4px solid var(--gold);">
+        <div class="pricing-category-title">
+          <div>
+            <span class="section-tag" style="margin-bottom: 0.2rem; background: rgba(197, 160, 89, 0.2); color: var(--gold-dark);"><i class="fa-solid fa-gift"></i> Exclusive Savings</span>
+            <h2 style="font-size: 1.85rem; margin-top: 0.2rem;">Curated Beauty & Grooming Packages</h2>
+          </div>
+        </div>
+
+        <div class="pricing-list">
+          {% for pkg in packages %}
+            <div class="pricing-row">
+              <div class="pricing-info">
+                <h4>{{ pkg.name }} <span class="badge badge-active" style="margin-left: 0.4rem; font-size: 0.7rem;">{{ pkg.gender_target }}</span></h4>
+                <p>{{ pkg.description }} <span style="color: var(--gold-dark); font-weight: 600; margin-left: 0.5rem;">⏱ {{ pkg.formatted_duration() }}</span></p>
+              </div>
+              <div class="pricing-action">
+                <span class="pricing-amount" style="color: var(--gold-dark);">{{ pkg.formatted_price(settings.currency_symbol if settings else '₹') }}</span>
+                <a href="{{ url_for('booking', service_id=pkg.id) }}" class="btn btn-gold btn-sm">Book Package</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Help Banner -->
+    <div style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+      <p><i class="fa-solid fa-circle-info" style="color: var(--gold-dark);"></i> Note: Pricing may vary based on hair length and volume. For customized packages or group inquiries, please <a href="{{ url_for('contact') }}" style="color: var(--primary); font-weight: 700; text-decoration: underline;">contact our reception</a>.</p>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

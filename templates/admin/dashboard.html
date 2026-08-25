@@ -1,0 +1,243 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard Overview | Nature Unisex Salon Admin{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block admin_content %}
+
+<!-- Metric Cards Grid -->
+<div class="stats-grid">
+  
+  <div class="stat-card">
+    <div class="stat-info">
+      <span>Total Bookings</span>
+      <h3>{{ total_appointments }}</h3>
+    </div>
+    <div class="stat-icon primary">
+      <i class="fa-solid fa-calendar-days"></i>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-info">
+      <span>Pending Requests</span>
+      <h3 style="color: var(--status-pending);">{{ pending_appointments }}</h3>
+    </div>
+    <div class="stat-icon warning">
+      <i class="fa-solid fa-clock"></i>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-info">
+      <span>Confirmed Slots</span>
+      <h3 style="color: var(--status-confirmed);">{{ confirmed_appointments }}</h3>
+    </div>
+    <div class="stat-icon info">
+      <i class="fa-solid fa-calendar-check"></i>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-info">
+      <span>Completed</span>
+      <h3 style="color: var(--status-completed);">{{ completed_appointments }}</h3>
+    </div>
+    <div class="stat-icon success">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-info">
+      <span>Active Services</span>
+      <h3>{{ total_services }}</h3>
+    </div>
+    <div class="stat-icon primary">
+      <i class="fa-solid fa-scissors"></i>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-info">
+      <span>Inquiries (Unread)</span>
+      <h3>{{ total_inquiries }} <span style="font-size: 0.95rem; color: #ef4444;">({{ unread_inquiries }})</span></h3>
+    </div>
+    <div class="stat-icon warning">
+      <i class="fa-solid fa-envelope"></i>
+    </div>
+  </div>
+
+</div>
+
+<!-- Quick Action Shortcuts -->
+<div style="margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+  <a href="{{ url_for('admin_services') }}" class="btn-action" style="background: var(--admin-primary); color: #ffffff; padding: 0.6rem 1.2rem; font-weight: 600;">
+    <i class="fa-solid fa-plus"></i> Add New Salon Service
+  </a>
+  <a href="{{ url_for('admin_appointments', status='Pending') }}" class="btn-action" style="background: #ffffff; padding: 0.6rem 1.2rem; font-weight: 600;">
+    <i class="fa-solid fa-filter" style="color: var(--status-pending);"></i> Review Pending Bookings ({{ pending_appointments }})
+  </a>
+  <a href="{{ url_for('admin_gallery') }}" class="btn-action" style="background: #ffffff; padding: 0.6rem 1.2rem; font-weight: 600;">
+    <i class="fa-solid fa-upload"></i> Upload Media
+  </a>
+  <a href="{{ url_for('admin_settings') }}" class="btn-action" style="background: #ffffff; padding: 0.6rem 1.2rem; font-weight: 600;">
+    <i class="fa-solid fa-gear"></i> Salon Contact & Hours
+  </a>
+</div>
+
+<!-- Recent Appointments Card -->
+<div class="admin-card">
+  <div class="card-header-flex">
+    <div>
+      <h3>Recent Appointment Requests</h3>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0;">Latest bookings submitted through the public website.</p>
+    </div>
+    <a href="{{ url_for('admin_appointments') }}" class="btn-action">
+      View All ({{ total_appointments }}) &rarr;
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Customer</th>
+          <th>Contact</th>
+          <th>Service</th>
+          <th>Date & Time</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in recent_appointments %}
+          <tr>
+            <td><strong>#{{ app.id }}</strong></td>
+            <td>
+              <strong>{{ app.customer_name }}</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">{{ app.gender }}</div>
+            </td>
+            <td>
+              <div>{{ app.phone }}</div>
+              {% if app.email %}<div style="font-size: 0.75rem; color: var(--text-muted);">{{ app.email }}</div>{% endif %}
+            </td>
+            <td><strong>{{ app.service_name }}</strong></td>
+            <td>
+              <div>{{ app.appointment_date }}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">{{ app.appointment_time }}</div>
+            </td>
+            <td>
+              <span class="badge badge-{{ app.status|lower }}">{{ app.status }}</span>
+            </td>
+            <td>
+              <div class="action-btn-group">
+                <button type="button" class="btn-action" onclick="openStatusModal({{ app.id }}, '{{ app.customer_name }}', '{{ app.status }}', '{{ app.admin_notes or '' }}')">
+                  <i class="fa-solid fa-pen-to-square"></i> Status
+                </button>
+                <a href="https://api.whatsapp.com/send?phone={{ app.phone|replace('+', '')|replace(' ', '') }}" target="_blank" rel="noopener" class="btn-action" title="Chat on WhatsApp" style="color: #16a34a;">
+                  <i class="fa-brands fa-whatsapp"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">No appointments found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Recent Inquiries Card -->
+<div class="admin-card">
+  <div class="card-header-flex">
+    <div>
+      <h3>Recent Customer Inquiries</h3>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0;">Messages sent via contact form.</p>
+    </div>
+    <a href="{{ url_for('admin_enquiries') }}" class="btn-action">
+      View All Inquiries &rarr;
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Contact Info</th>
+          <th>Subject & Message</th>
+          <th>Received At</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inq in recent_inquiries %}
+          <tr style="{% if not inq.is_read %}font-weight: 600; background: #fafafa;{% endif %}">
+            <td>{{ inq.name }}</td>
+            <td>
+              <div>{{ inq.phone }}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">{{ inq.email or 'No email' }}</div>
+            </td>
+            <td>
+              <div>{{ inq.subject }}</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal; max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                {{ inq.message }}
+              </div>
+            </td>
+            <td>{{ inq.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+            <td>
+              <form action="{{ url_for('admin_toggle_enquiry_read', enquiry_id=inq.id) }}" method="POST" style="display: inline;">
+                <button type="submit" class="btn-action">
+                  {% if inq.is_read %}<i class="fa-regular fa-envelope"></i> Unread{% else %}<i class="fa-solid fa-check"></i> Mark Read{% endif %}
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No inquiries yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Global Status Update Modal -->
+<div class="admin-modal" id="statusModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="statusModalTitle">Update Appointment Status</h3>
+      <button class="modal-close" onclick="closeModal('statusModal')">&times;</button>
+    </div>
+    <form id="updateStatusForm" method="POST">
+      <div class="modal-body">
+        <div class="admin-form-group">
+          <label class="admin-form-label">Appointment Status</label>
+          <select name="status" id="modalStatusSelect" class="admin-form-control">
+            <option value="Pending">Pending (Awaiting Confirmation)</option>
+            <option value="Confirmed">Confirmed (Slot Reserved)</option>
+            <option value="Completed">Completed (Service Done)</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Admin Notes / Assigned Specialist</label>
+          <textarea name="admin_notes" id="modalNotesArea" class="admin-form-control" rows="3" placeholder="e.g. Confirmed on call with client, assigned senior hair stylist."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action" onclick="closeModal('statusModal')">Cancel</button>
+        <button type="submit" class="btn-action" style="background: var(--admin-primary); color: #ffffff;">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

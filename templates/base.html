@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ settings.salon_name if settings else 'Nature Unisex Salon' }} | Hair, Beauty & Grooming{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ settings.hero_subtext if settings else 'Premium salon services for men and women. Hair styling, beard sculpting, facial treatments, hair spa, and bridal packages.' }}{% endblock %}">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="{{ settings.salon_name if settings else 'Nature Unisex Salon' }}">
+  <meta property="og:description" content="{{ settings.tagline if settings else 'Style. Care. Confidence.' }}">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{{ url_for('static', filename='images/hero_salon.jpg') }}">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="top-bar">
+    <div class="container top-bar-content">
+      <div class="top-bar-items">
+        <div class="top-bar-item">
+          <i class="fa-solid fa-location-dot"></i>
+          <span>{{ settings.address if settings else 'Nature Unisex Salon, Austin Town / Neelasandra, Bengaluru' }}</span>
+        </div>
+        <div class="top-bar-item">
+          <i class="fa-solid fa-clock"></i>
+          <span>{{ settings.opening_hours_weekdays if settings else 'Mon - Sat: 9 AM - 9 PM' }}</span>
+        </div>
+      </div>
+      <div class="top-bar-items">
+        <div class="top-bar-item">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:{{ settings.phone if settings else '+917483737517' }}">{{ settings.phone if settings else '+91 74837 37517' }}</a>
+        </div>
+        <div class="top-bar-item">
+          <a href="{{ url_for('admin_login') }}" style="opacity: 0.75; font-size: 0.78rem;"><i class="fa-solid fa-lock"></i> Staff Portal</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="{{ url_for('index') }}" class="brand-logo">
+        <span class="brand-title">{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</span>
+        <span class="brand-subtitle">{{ settings.tagline if settings else 'Style. Care. Confidence.' }}</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">Home</a>
+        <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">About</a>
+        <a href="{{ url_for('services') }}" class="nav-link {% if request.endpoint == 'services' %}active{% endif %}">Services</a>
+        <a href="{{ url_for('pricing') }}" class="nav-link {% if request.endpoint == 'pricing' %}active{% endif %}">Pricing</a>
+        <a href="{{ url_for('gallery') }}" class="nav-link {% if request.endpoint == 'gallery' %}active{% endif %}">Gallery</a>
+        <a href="{{ url_for('reviews') }}" class="nav-link {% if request.endpoint == 'reviews' %}active{% endif %}">Reviews</a>
+        <a href="{{ url_for('contact') }}" class="nav-link {% if request.endpoint == 'contact' %}active{% endif %}">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="{{ url_for('booking') }}" class="btn btn-gold btn-sm">
+          <i class="fa-regular fa-calendar-check"></i> Book Appointment
+        </a>
+        <button class="mobile-toggle" aria-label="Toggle Navigation Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Flash Messages / Toast Feedback -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="toast-container">
+        {% for category, message in messages %}
+          <div class="toast {{ category }}">
+            <i class="fa-solid {% if category == 'success' %}fa-circle-check text-success{% elif category == 'error' %}fa-circle-exclamation text-danger{% else %}fa-circle-info text-info{% endif %}"></i>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main Content Block -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Floating WhatsApp Action -->
+  <a href="{{ whatsapp_chat_url }}" target="_blank" rel="noopener" class="floating-whatsapp" aria-label="Chat on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo" style="margin-bottom: 1.2rem;">
+            <span class="brand-title" style="color: #ffffff;">{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</span>
+            <span class="brand-subtitle">{{ settings.tagline if settings else 'Style. Care. Confidence.' }}</span>
+          </div>
+          <p>{{ settings.about_text[:160] if settings else 'A premium sanctuary dedicated to organic hair artistry, rejuvenating skincare, and precision grooming for men and women.' }}...</p>
+          <div class="footer-socials">
+            {% if settings and settings.instagram_url %}
+              <a href="{{ settings.instagram_url }}" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            {% endif %}
+            {% if settings and settings.facebook_url %}
+              <a href="{{ settings.facebook_url }}" target="_blank" rel="noopener" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            {% endif %}
+            <a href="{{ whatsapp_chat_url }}" target="_blank" rel="noopener" class="social-icon" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('about') }}">About Us</a></li>
+            <li><a href="{{ url_for('services') }}">Services Menu</a></li>
+            <li><a href="{{ url_for('pricing') }}">Pricing & Packages</a></li>
+            <li><a href="{{ url_for('gallery') }}">Salon Gallery</a></li>
+            <li><a href="{{ url_for('reviews') }}">Client Reviews</a></li>
+            <li><a href="{{ url_for('booking') }}">Book Online</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Popular Services</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('services', gender='Men') }}">Men's Precision Styling</a></li>
+            <li><a href="{{ url_for('services', gender='Men') }}">Beard Trim & Spa</a></li>
+            <li><a href="{{ url_for('services', gender='Women') }}">Balayage & Hair Colour</a></li>
+            <li><a href="{{ url_for('services', gender='Women') }}">Keratin Smoothening</a></li>
+            <li><a href="{{ url_for('services', category='Bridal') }}">Royal Bridal Makeover</a></li>
+            <li><a href="{{ url_for('services', category='Skin') }}">Hydra Gold Facial</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Visit & Contact</h4>
+          <p style="margin-bottom: 0.6rem;"><i class="fa-solid fa-location-dot text-gold" style="margin-right: 0.5rem;"></i> {{ settings.address if settings else 'Nature Unisex Salon, Austin Town / Neelasandra, Bengaluru, Karnataka 560047, India' }}</p>
+          <p style="margin-bottom: 0.6rem;"><i class="fa-solid fa-phone text-gold" style="margin-right: 0.5rem;"></i> {{ settings.phone if settings else '+91 74837 37517' }}</p>
+          <p style="margin-bottom: 0.6rem;"><i class="fa-solid fa-envelope text-gold" style="margin-right: 0.5rem;"></i> {{ settings.email if settings else 'info@natureunisexsalon.com' }}</p>
+          <p style="margin-bottom: 0.6rem;"><i class="fa-solid fa-clock text-gold" style="margin-right: 0.5rem;"></i> {{ settings.opening_hours_weekdays if settings else 'Mon - Sat: 9 AM - 9 PM' }}</p>
+          <p style="margin-bottom: 1.2rem;"><i class="fa-regular fa-clock text-gold" style="margin-right: 0.5rem;"></i> {{ settings.opening_hours_weekends if settings else 'Sun: 10 AM - 8 PM' }}</p>
+          <a href="{{ settings.google_maps_url if settings else '#' }}" target="_blank" rel="noopener" class="btn btn-outline-gold btn-sm">
+            <i class="fa-solid fa-diamond-turn-right"></i> Get Directions
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          &copy; {{ current_year }} {{ settings.salon_name if settings else 'Nature Unisex Salon' }}. All rights reserved.
+        </div>
+        <div>
+          <span style="color: rgba(255,255,255,0.45); font-size: 0.8rem;">Crafted for Pure Elegance & Confidence</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Master JavaScript -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

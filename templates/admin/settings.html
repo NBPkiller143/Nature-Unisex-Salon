@@ -1,0 +1,159 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Website Settings & Profile | Nature Unisex Salon Admin{% endblock %}
+{% block page_title %}Website Settings & Salon Profile{% endblock %}
+
+{% block admin_content %}
+
+<div class="admin-form-grid" style="grid-template-columns: 2fr 1fr; align-items: start;">
+  
+  <!-- Left: Salon Master Settings Form -->
+  <div class="admin-card">
+    <div class="card-header-flex">
+      <div>
+        <h3>Salon Business Details & Contact Info</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0;">These values dynamically update the header, footer, contact page, WhatsApp links, and meta tags.</p>
+      </div>
+    </div>
+
+    <form action="{{ url_for('admin_settings') }}" method="POST" style="padding: 1.5rem;">
+      
+      <div class="admin-form-grid">
+        <div class="admin-form-group">
+          <label class="admin-form-label">Salon Business Name *</label>
+          <input type="text" name="salon_name" class="admin-form-control" value="{{ settings.salon_name }}" required>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Brand Tagline</label>
+          <input type="text" name="tagline" class="admin-form-control" value="{{ settings.tagline }}">
+        </div>
+      </div>
+
+      <div class="admin-form-grid">
+        <div class="admin-form-group">
+          <label class="admin-form-label">Phone Number (Calling) *</label>
+          <input type="text" name="phone" class="admin-form-control" value="{{ settings.phone }}" required>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">WhatsApp Number (Digits with Country Code, e.g. 919876543210) *</label>
+          <input type="text" name="whatsapp_number" class="admin-form-control" value="{{ settings.whatsapp_number }}" required>
+        </div>
+      </div>
+
+      <div class="admin-form-grid">
+        <div class="admin-form-group">
+          <label class="admin-form-label">Contact Email Address *</label>
+          <input type="email" name="email" class="admin-form-control" value="{{ settings.email }}" required>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Currency Symbol</label>
+          <input type="text" name="currency_symbol" class="admin-form-control" value="{{ settings.currency_symbol }}" style="width: 100px;">
+        </div>
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label">Physical Salon Address *</label>
+        <textarea name="address" class="admin-form-control" rows="2" required>{{ settings.address }}</textarea>
+      </div>
+
+      <div class="admin-form-grid">
+        <div class="admin-form-group">
+          <label class="admin-form-label">Opening Hours (Weekdays) *</label>
+          <input type="text" name="opening_hours_weekdays" class="admin-form-control" value="{{ settings.opening_hours_weekdays }}" required>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Opening Hours (Weekends) *</label>
+          <input type="text" name="opening_hours_weekends" class="admin-form-control" value="{{ settings.opening_hours_weekends }}" required>
+        </div>
+      </div>
+
+      <div class="admin-form-grid">
+        <div class="admin-form-group">
+          <label class="admin-form-label">Instagram Profile URL</label>
+          <input type="url" name="instagram_url" class="admin-form-control" value="{{ settings.instagram_url }}">
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Facebook Profile URL</label>
+          <input type="url" name="facebook_url" class="admin-form-control" value="{{ settings.facebook_url }}">
+        </div>
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label">Google Maps Direction URL (External Link)</label>
+        <input type="url" name="google_maps_url" class="admin-form-control" value="{{ settings.google_maps_url }}">
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label">Google Maps Embed URL (Iframe Src)</label>
+        <input type="text" name="google_maps_embed" class="admin-form-control" value="{{ settings.google_maps_embed }}">
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label">Homepage Hero Headline</label>
+        <input type="text" name="hero_headline" class="admin-form-control" value="{{ settings.hero_headline }}">
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label">Homepage Hero Supporting Text</label>
+        <textarea name="hero_subtext" class="admin-form-control" rows="2">{{ settings.hero_subtext }}</textarea>
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label">About Story Summary</label>
+        <textarea name="about_text" class="admin-form-control" rows="4">{{ settings.about_text }}</textarea>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem; margin-top: 1.5rem; text-align: right;">
+        <button type="submit" class="btn-action" style="background: var(--admin-primary); color: #ffffff; padding: 0.75rem 1.5rem; font-weight: 700; font-size: 0.95rem;">
+          <i class="fa-solid fa-floppy-disk"></i> Save Website Settings
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Right: Admin Security Credentials Card -->
+  <div class="admin-card">
+    <div class="card-header-flex">
+      <h3>Admin Security & Password</h3>
+    </div>
+
+    <form action="{{ url_for('admin_update_profile') }}" method="POST" style="padding: 1.5rem;">
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        Update your login username, email, or change your administrative password.
+      </p>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label">Username</label>
+        <input type="text" name="username" class="admin-form-control" value="{{ current_user.username }}" required>
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label">Email Address</label>
+        <input type="email" name="email" class="admin-form-control" value="{{ current_user.email }}" required>
+      </div>
+
+      <div class="admin-form-group" style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+        <label class="admin-form-label">Current Password *</label>
+        <input type="password" name="current_password" class="admin-form-control" required placeholder="••••••••">
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label">New Password (Leave blank to keep same)</label>
+        <input type="password" name="new_password" class="admin-form-control" placeholder="••••••••">
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label">Confirm New Password</label>
+        <input type="password" name="confirm_password" class="admin-form-control" placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="btn-action" style="width: 100%; justify-content: center; background: var(--admin-gold); color: #ffffff; padding: 0.65rem; font-weight: 700; margin-top: 0.5rem;">
+        <i class="fa-solid fa-key"></i> Update Credentials
+      </button>
+    </form>
+  </div>
+
+</div>
+
+{% endblock %}

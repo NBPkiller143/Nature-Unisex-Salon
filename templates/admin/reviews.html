@@ -1,0 +1,124 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Customer Reviews Management | Nature Unisex Salon Admin{% endblock %}
+{% block page_title %}Customer Reviews Management{% endblock %}
+
+{% block admin_content %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h3 style="font-size: 1.25rem;">Client Feedback & Testimonials</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0;">Moderate incoming reviews, publish verified customer quotes, or add testimonials manually.</p>
+  </div>
+  <button type="button" class="btn-action" style="background: var(--admin-primary); color: #ffffff; padding: 0.65rem 1.25rem; font-weight: 600;" onclick="openModal('addReviewModal')">
+    <i class="fa-solid fa-plus"></i> Add Testimonial
+  </button>
+</div>
+
+<!-- Reviews Table Card -->
+<div class="admin-card">
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Rating</th>
+          <th>Service Taken</th>
+          <th>Testimonial Text</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rev in reviews %}
+          <tr>
+            <td><strong>{{ rev.customer_name }}</strong></td>
+            <td>
+              <span style="color: #f59e0b; font-size: 0.95rem;">
+                {% for i in range(rev.rating) %}★{% endfor %}
+              </span>
+            </td>
+            <td>{{ rev.service_name or 'General Experience' }}</td>
+            <td style="max-width: 320px;">
+              <div style="font-size: 0.85rem; color: var(--text-main); font-style: italic;">
+                “{{ rev.review_text }}”
+              </div>
+            </td>
+            <td>
+              <form action="{{ url_for('admin_toggle_review', review_id=rev.id) }}" method="POST" style="display: inline;">
+                <button type="submit" class="badge {% if rev.is_active %}badge-active{% else %}badge-inactive{% endif %}" style="border: none; cursor: pointer;" title="Toggle Visibility">
+                  {% if rev.is_active %}Published{% else %}Hidden{% endif %}
+                </button>
+              </form>
+            </td>
+            <td>{{ rev.created_at.strftime('%d %b %Y') }}</td>
+            <td>
+              <div class="action-btn-group">
+                <form action="{{ url_for('admin_delete_review', review_id=rev.id) }}" method="POST" onsubmit="return confirm('Delete this review permanently?');" style="display: inline;">
+                  <button type="submit" class="btn-action delete" title="Delete Review">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+              No reviews found.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Review Modal -->
+<div class="admin-modal" id="addReviewModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Add Customer Testimonial</h3>
+      <button class="modal-close" onclick="closeModal('addReviewModal')">&times;</button>
+    </div>
+    <form action="{{ url_for('admin_add_review') }}" method="POST">
+      <div class="modal-body">
+        
+        <div class="admin-form-group">
+          <label class="admin-form-label">Customer Name *</label>
+          <input type="text" name="customer_name" class="admin-form-control" required placeholder="e.g. Vikram Malhotra">
+        </div>
+
+        <div class="admin-form-grid">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Rating (1 to 5 Stars) *</label>
+            <select name="rating" class="admin-form-control" required>
+              <option value="5" selected>5 Stars (★★★★★)</option>
+              <option value="4">4 Stars (★★★★☆)</option>
+              <option value="3">3 Stars (★★★☆☆)</option>
+              <option value="2">2 Stars (★★☆☆☆)</option>
+              <option value="1">1 Star (★☆☆☆☆)</option>
+            </select>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Service Tag / Package</label>
+            <input type="text" name="service_name" class="admin-form-control" placeholder="e.g. Balayage & Hair Spa">
+          </div>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Review / Feedback Text *</label>
+          <textarea name="review_text" class="admin-form-control" rows="4" required placeholder="Customer's comments on the styling, hygiene, staff, and atmosphere..."></textarea>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action" onclick="closeModal('addReviewModal')">Cancel</button>
+        <button type="submit" class="btn-action" style="background: var(--admin-primary); color: #ffffff;">Publish Testimonial</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

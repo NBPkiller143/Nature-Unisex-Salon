@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Client Reviews | {{ settings.salon_name if settings else 'Nature Unisex Salon' }}{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero Header -->
+<section class="section-padding-sm" style="background: linear-gradient(rgba(15,46,33,0.85), rgba(15,46,33,0.9)), url('{{ url_for('static', filename='images/hero_salon.jpg') }}') center/cover; color: #ffffff; text-align: center;">
+  <div class="container">
+    <div class="section-tag" style="background: rgba(197, 160, 89, 0.2); color: var(--gold-light);"><i class="fa-solid fa-star"></i> Testimonials</div>
+    <h1 style="color: #ffffff; margin-bottom: 0.8rem;">Client Experiences & Stories</h1>
+    <p style="color: rgba(255,255,255,0.85); max-width: 620px; margin: 0 auto; font-size: 1.1rem;">Read what our valued men and women clients say about our styling, treatments, and hospitality.</p>
+  </div>
+</section>
+
+<!-- Reviews Showcase & Submission Form -->
+<section class="section-padding" style="background: var(--bg-main);">
+  <div class="container">
+    
+    <div class="contact-grid">
+      <!-- Left Column: Reviews Grid -->
+      <div>
+        <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+          <div class="section-tag"><i class="fa-solid fa-heart"></i> Verified Stories</div>
+          <h2 class="section-title">What Clients Love</h2>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          {% for review in reviews %}
+            <div class="review-card">
+              <div class="review-stars">
+                {% for i in range(review.rating) %}<i class="fa-solid fa-star"></i>{% endfor %}
+                {% for i in range(5 - review.rating) %}<i class="fa-regular fa-star" style="color: #cbd5e1;"></i>{% endfor %}
+              </div>
+              <p class="review-quote">“{{ review.review_text }}”</p>
+              <div class="review-author">
+                <div class="review-avatar">{{ review.customer_name[0] }}</div>
+                <div class="review-author-info">
+                  <h5>{{ review.customer_name }}</h5>
+                  <span>{{ review.service_name or 'Salon Guest' }}</span>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Right Column: Leave a Review Form -->
+      <div>
+        <div style="background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-md); padding: 2.5rem; position: sticky; top: 100px;">
+          <div class="section-tag"><i class="fa-solid fa-pen-nib"></i> Share Your Feedback</div>
+          <h3 style="margin-top: 0.3rem; margin-bottom: 0.5rem;">Leave Your Review</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem;">Visited us recently? We'd love to hear about your experience at Nature Unisex Salon.</p>
+
+          <form action="{{ url_for('reviews') }}" method="POST">
+            <div class="form-group">
+              <label for="reviewName" class="form-label">Your Name *</label>
+              <input type="text" class="form-control" id="reviewName" name="customer_name" required placeholder="e.g. Priya Sharma">
+            </div>
+
+            <div class="form-group">
+              <label for="reviewService" class="form-label">Service Received (Optional)</label>
+              <select class="form-control" id="reviewService" name="service_name">
+                <option value="">-- Select Service Received --</option>
+                {% for svc in services %}
+                  <option value="{{ svc.name }}">{{ svc.name }} ({{ svc.gender_target }})</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="reviewRating" class="form-label">Rating *</label>
+              <select class="form-control" id="reviewRating" name="rating" required>
+                <option value="5">★★★★★ - Excellent (5 Stars)</option>
+                <option value="4">★★★★☆ - Very Good (4 Stars)</option>
+                <option value="3">★★★☆☆ - Good (3 Stars)</option>
+                <option value="2">★★☆☆☆ - Average (2 Stars)</option>
+                <option value="1">★☆☆☆☆ - Needs Improvement (1 Star)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="reviewText" class="form-label">Your Review *</label>
+              <textarea class="form-control" id="reviewText" name="review_text" rows="4" required placeholder="Tell us about the ambiance, stylist skill, product quality, or overall service..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-gold btn-lg" style="width: 100%;">
+              <i class="fa-solid fa-paper-plane"></i> Submit Feedback
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

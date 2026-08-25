@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Book an Appointment | {{ settings.salon_name if settings else 'Nature Unisex Salon' }}{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero Header -->
+<section class="section-padding-sm" style="background: linear-gradient(rgba(15,46,33,0.88), rgba(15,46,33,0.92)), url('{{ url_for('static', filename='images/hero_salon.jpg') }}') center/cover; color: #ffffff; text-align: center;">
+  <div class="container">
+    <div class="section-tag" style="background: rgba(197, 160, 89, 0.2); color: var(--gold-light);"><i class="fa-solid fa-calendar-check"></i> Seamless Reservations</div>
+    <h1 style="color: #ffffff; margin-bottom: 0.8rem;">Book Your Salon Appointment</h1>
+    <p style="color: rgba(255,255,255,0.85); max-width: 600px; margin: 0 auto; font-size: 1.1rem;">Choose your preferred service, time slot, and specialist. We'll hold your place and confirm via WhatsApp or Call.</p>
+  </div>
+</section>
+
+<!-- Booking Form Section -->
+<section class="section-padding" style="background: var(--bg-main);">
+  <div class="container">
+    <div class="booking-wrapper">
+      <div class="booking-grid">
+        
+        <!-- Left Info Pane -->
+        <div class="booking-info-pane">
+          <div>
+            <span class="section-tag" style="background: rgba(197, 160, 89, 0.2); color: var(--gold-light);"><i class="fa-solid fa-leaf"></i> Nature Guarantee</span>
+            <h3 style="color: #ffffff;">Reserve In 60 Seconds</h3>
+            <p>Experience zero-wait priority booking, customized consultation, and hygienic styling care.</p>
+            
+            <div class="booking-perks">
+              <div class="booking-perk-item">
+                <i class="fa-solid fa-circle-check"></i>
+                <div>
+                  <h5 style="color: #ffffff; font-size: 0.95rem; font-weight: 700; margin-bottom: 0.1rem;">Instant WhatsApp Confirmation</h5>
+                  <p style="font-size: 0.82rem; margin-bottom: 0; color: rgba(255,255,255,0.75);">Receive instant booking summary on your WhatsApp.</p>
+                </div>
+              </div>
+              <div class="booking-perk-item">
+                <i class="fa-solid fa-circle-check"></i>
+                <div>
+                  <h5 style="color: #ffffff; font-size: 0.95rem; font-weight: 700; margin-bottom: 0.1rem;">Flexible Rescheduling</h5>
+                  <p style="font-size: 0.82rem; margin-bottom: 0; color: rgba(255,255,255,0.75);">Change or cancel your slot anytime with a simple text.</p>
+                </div>
+              </div>
+              <div class="booking-perk-item">
+                <i class="fa-solid fa-circle-check"></i>
+                <div>
+                  <h5 style="color: #ffffff; font-size: 0.95rem; font-weight: 700; margin-bottom: 0.1rem;">Sanitized Private Stations</h5>
+                  <p style="font-size: 0.82rem; margin-bottom: 0; color: rgba(255,255,255,0.75);">Freshly disinfected styling chairs and single-use towels.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 1.5rem;">
+            <p style="font-size: 0.85rem; color: rgba(255,255,255,0.75); margin-bottom: 0.5rem;"><i class="fa-solid fa-phone text-gold"></i> Prefer booking by phone?</p>
+            <a href="tel:{{ settings.phone if settings else '+917483737517' }}" style="color: #ffffff; font-weight: 700; font-size: 1.1rem; text-decoration: underline;">
+              {{ settings.phone if settings else '+91 74837 37517' }}
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Form Pane -->
+        <div class="booking-form-pane">
+          <h2 style="font-size: 1.85rem; margin-bottom: 0.4rem;">Appointment Details</h2>
+          <p style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 2rem;">Please fill out the form below to secure your appointment.</p>
+
+          <form action="{{ url_for('booking') }}" method="POST" id="appointmentBookingForm">
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="customerName" class="form-label">Full Name *</label>
+                <input type="text" class="form-control" id="customerName" name="customer_name" required placeholder="e.g. Rahul Sharma">
+              </div>
+              <div class="form-group">
+                <label for="customerPhone" class="form-label">Mobile Number *</label>
+                <input type="tel" class="form-control" id="customerPhone" name="phone" required placeholder="e.g. +91 98765 43210">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="customerEmail" class="form-label">Email Address (Optional)</label>
+                <input type="email" class="form-control" id="customerEmail" name="email" placeholder="e.g. rahul@example.com">
+              </div>
+              <div class="form-group">
+                <label for="customerGender" class="form-label">Client Category</label>
+                <select class="form-control" id="customerGender" name="gender">
+                  <option value="Men">Men</option>
+                  <option value="Women">Women</option>
+                  <option value="Not Specified">Prefer Not To Say</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="serviceSelect" class="form-label">Select Salon Service *</label>
+              <select class="form-control" id="serviceSelect" name="service_id" required>
+                <option value="">-- Choose Desired Treatment --</option>
+                {% for svc in services %}
+                  <option value="{{ svc.id }}" {% if preselected_service_id == svc.id %}selected{% endif %}>
+                    [{{ svc.gender_target }} - {{ svc.category }}] {{ svc.name }} ({{ svc.formatted_price(settings.currency_symbol if settings else '₹') }} • {{ svc.formatted_duration() }})
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="appointmentDate" class="form-label">Preferred Date *</label>
+                <input type="date" class="form-control" id="appointmentDate" name="appointment_date" required>
+              </div>
+              <div class="form-group">
+                <label for="appointmentTime" class="form-label">Preferred Time Slot *</label>
+                <select class="form-control" id="appointmentTime" name="appointment_time" required>
+                  <option value="">-- Select Time Slot --</option>
+                  <option value="09:30 AM">09:30 AM (Morning Slot)</option>
+                  <option value="10:30 AM">10:30 AM</option>
+                  <option value="11:30 AM">11:30 AM</option>
+                  <option value="12:30 PM">12:30 PM</option>
+                  <option value="02:00 PM">02:00 PM (Afternoon Slot)</option>
+                  <option value="03:00 PM">03:00 PM</option>
+                  <option value="04:00 PM">04:00 PM</option>
+                  <option value="05:00 PM">05:00 PM (Evening Slot)</option>
+                  <option value="06:00 PM">06:00 PM</option>
+                  <option value="07:00 PM">07:00 PM</option>
+                  <option value="08:00 PM">08:00 PM</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="bookingMessage" class="form-label">Special Requests / Stylist Preferences (Optional)</label>
+              <textarea class="form-control" id="bookingMessage" name="message" rows="3" placeholder="Tell us if you have sensitive skin, specific styling photos, or timing preferences..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-gold btn-lg" style="width: 100%; margin-top: 0.5rem;">
+              <i class="fa-regular fa-paper-plane"></i> Confirm & Submit Appointment
+            </button>
+
+            <div style="text-align: center; margin-top: 1rem;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">
+                <i class="fa-solid fa-lock" style="color: var(--primary);"></i> Your contact details are strictly confidential.
+              </span>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

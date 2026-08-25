@@ -1,0 +1,249 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Services & Pricing Management | Nature Unisex Salon Admin{% endblock %}
+{% block page_title %}Services & Pricing Management{% endblock %}
+
+{% block admin_content %}
+
+<!-- Header & Add Service CTA -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h3 style="font-size: 1.25rem;">Salon Services Catalog</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0;">Add, update, adjust prices, or toggle treatments. Changes instantly sync to the public website.</p>
+  </div>
+  <button type="button" class="btn-action" style="background: var(--admin-primary); color: #ffffff; padding: 0.65rem 1.25rem; font-weight: 600;" onclick="openModal('addServiceModal')">
+    <i class="fa-solid fa-plus"></i> Add New Service
+  </button>
+</div>
+
+<!-- Services Table Card -->
+<div class="admin-card">
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Service Name</th>
+          <th>Gender</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Duration</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for svc in services %}
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                {% if svc.image_url %}
+                  <img src="{{ svc.image_url }}" alt="{{ svc.name }}" style="width: 44px; height: 44px; border-radius: var(--radius-sm); object-fit: cover; border: 1px solid var(--border-color);">
+                {% else %}
+                  <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                    <i class="fa-solid fa-scissors"></i>
+                  </div>
+                {% endif %}
+                <div>
+                  <strong style="color: var(--admin-primary);">{{ svc.name }}</strong>
+                  <div style="font-size: 0.75rem; color: var(--text-muted); max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    {{ svc.description }}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge" style="background: #f1f5f9; color: #334155;">{{ svc.gender_target }}</span>
+            </td>
+            <td>
+              <strong>{{ svc.category }}</strong>
+            </td>
+            <td>
+              <strong style="color: var(--admin-primary); font-size: 0.95rem;">{{ svc.formatted_price(settings.currency_symbol if settings else '₹') }}</strong>
+            </td>
+            <td>{{ svc.formatted_duration() }}</td>
+            <td>
+              <form action="{{ url_for('admin_toggle_service', service_id=svc.id) }}" method="POST" style="display: inline;">
+                <button type="submit" class="badge {% if svc.is_active %}badge-active{% else %}badge-inactive{% endif %}" style="border: none; cursor: pointer;" title="Click to Toggle Status">
+                  {% if svc.is_active %}Active & Visible{% else %}Hidden (Inactive){% endif %}
+                </button>
+              </form>
+            </td>
+            <td>
+              <div class="action-btn-group">
+                <!-- Edit Service Button -->
+                <button type="button" class="btn-action" title="Edit Service" onclick='openEditServiceModal({{ {"id": svc.id, "name": svc.name, "gender_target": svc.gender_target, "category": svc.category, "price": svc.price, "duration_mins": svc.duration_mins, "display_order": svc.display_order, "description": svc.description, "is_active": svc.is_active}|tojson }})'>
+                  <i class="fa-solid fa-pen"></i> Edit
+                </button>
+
+                <!-- Delete Service Button -->
+                <form action="{{ url_for('admin_delete_service', service_id=svc.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete service {{ svc.name }}?');" style="display: inline;">
+                  <button type="submit" class="btn-action delete" title="Delete Service">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+              No salon services found. Click "Add New Service" to create your first item.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Service Modal -->
+<div class="admin-modal" id="addServiceModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Add New Salon Service</h3>
+      <button class="modal-close" onclick="closeModal('addServiceModal')">&times;</button>
+    </div>
+    <form action="{{ url_for('admin_add_service') }}" method="POST" enctype="multipart/form-data">
+      <div class="modal-body">
+        
+        <div class="admin-form-group">
+          <label class="admin-form-label">Service Name *</label>
+          <input type="text" name="name" class="admin-form-control" required placeholder="e.g. Signature Precision Haircut">
+        </div>
+
+        <div class="admin-form-grid">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Target Client Category *</label>
+            <select name="gender_target" class="admin-form-control" required>
+              <option value="Men">Men</option>
+              <option value="Women">Women</option>
+              <option value="Unisex" selected>Unisex</option>
+            </select>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Service Category *</label>
+            <select name="category" class="admin-form-control" required>
+              {% for cat in categories %}
+                <option value="{{ cat }}">{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="admin-form-grid">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Price ({{ settings.currency_symbol if settings else '₹' }}) *</label>
+            <input type="number" step="0.01" name="price" class="admin-form-control" required placeholder="e.g. 500">
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Duration (Minutes) *</label>
+            <input type="number" name="duration_mins" value="45" class="admin-form-control" required placeholder="45">
+          </div>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Display Order (Sorting)</label>
+          <input type="number" name="display_order" value="0" class="admin-form-control" placeholder="0">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Description / Ritual Details</label>
+          <textarea name="description" class="admin-form-control" rows="3" placeholder="Describe the treatment steps, organic products used, and benefits..."></textarea>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Service Photo (Upload)</label>
+          <input type="file" name="image_file" accept="image/*" class="admin-form-control image-upload-input" data-preview-target="addServicePreview">
+          <img id="addServicePreview" src="" alt="Preview" style="display: none; width: 100px; height: 100px; object-fit: cover; margin-top: 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+          <input type="checkbox" name="is_active" id="add_is_active" checked>
+          <label for="add_is_active" class="admin-form-label" style="margin-bottom: 0; cursor: pointer;">Enable service immediately on public website</label>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action" onclick="closeModal('addServiceModal')">Cancel</button>
+        <button type="submit" class="btn-action" style="background: var(--admin-primary); color: #ffffff;">Save Service</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Service Modal -->
+<div class="admin-modal" id="editServiceModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Edit Salon Service</h3>
+      <button class="modal-close" onclick="closeModal('editServiceModal')">&times;</button>
+    </div>
+    <form id="editServiceForm" method="POST" enctype="multipart/form-data">
+      <div class="modal-body">
+        
+        <div class="admin-form-group">
+          <label class="admin-form-label">Service Name *</label>
+          <input type="text" name="name" id="edit_service_name" class="admin-form-control" required>
+        </div>
+
+        <div class="admin-form-grid">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Target Client Category *</label>
+            <select name="gender_target" id="edit_gender_target" class="admin-form-control" required>
+              <option value="Men">Men</option>
+              <option value="Women">Women</option>
+              <option value="Unisex">Unisex</option>
+            </select>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Service Category *</label>
+            <select name="category" id="edit_category" class="admin-form-control" required>
+              {% for cat in categories %}
+                <option value="{{ cat }}">{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="admin-form-grid">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Price ({{ settings.currency_symbol if settings else '₹' }}) *</label>
+            <input type="number" step="0.01" name="price" id="edit_price" class="admin-form-control" required>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Duration (Minutes) *</label>
+            <input type="number" name="duration_mins" id="edit_duration" class="admin-form-control" required>
+          </div>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Display Order</label>
+          <input type="number" name="display_order" id="edit_display_order" class="admin-form-control">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Description</label>
+          <textarea name="description" id="edit_description" class="admin-form-control" rows="3"></textarea>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Update Service Photo (Optional)</label>
+          <input type="file" name="image_file" accept="image/*" class="admin-form-control image-upload-input" data-preview-target="editServicePreview">
+          <img id="editServicePreview" src="" alt="Preview" style="display: none; width: 100px; height: 100px; object-fit: cover; margin-top: 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+          <input type="checkbox" name="is_active" id="edit_is_active">
+          <label for="edit_is_active" class="admin-form-label" style="margin-bottom: 0; cursor: pointer;">Active & Visible on Public Website</label>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action" onclick="closeModal('editServiceModal')">Cancel</button>
+        <button type="submit" class="btn-action" style="background: var(--admin-primary); color: #ffffff;">Update Service</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

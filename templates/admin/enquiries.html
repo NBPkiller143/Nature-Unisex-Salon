@@ -1,0 +1,78 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Contact Enquiries Inbox | Nature Unisex Salon Admin{% endblock %}
+{% block page_title %}Contact Enquiries Inbox{% endblock %}
+
+{% block admin_content %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+  <div>
+    <h3 style="font-size: 1.25rem;">Customer Messages & Inquiries</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0;">Messages submitted through the public Contact page form.</p>
+  </div>
+</div>
+
+<div class="admin-card">
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Customer</th>
+          <th>Contact Info</th>
+          <th>Subject</th>
+          <th>Message</th>
+          <th>Received At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inq in enquiries %}
+          <tr style="{% if not inq.is_read %}background: #fdfdfd; font-weight: 500;{% endif %}">
+            <td>
+              <form action="{{ url_for('admin_toggle_enquiry_read', enquiry_id=inq.id) }}" method="POST">
+                <button type="submit" class="badge {% if inq.is_read %}badge-inactive{% else %}badge-pending{% endif %}" style="border: none; cursor: pointer;">
+                  {% if inq.is_read %}Read{% else %}New / Unread{% endif %}
+                </button>
+              </form>
+            </td>
+            <td><strong>{{ inq.name }}</strong></td>
+            <td>
+              <div><a href="tel:{{ inq.phone }}" style="color: var(--admin-primary); font-weight: 600;">{{ inq.phone }}</a></div>
+              {% if inq.email %}<div style="font-size: 0.75rem; color: var(--text-muted);"><a href="mailto:{{ inq.email }}">{{ inq.email }}</a></div>{% endif %}
+            </td>
+            <td><strong>{{ inq.subject }}</strong></td>
+            <td style="max-width: 320px;">
+              <div style="font-size: 0.85rem; line-height: 1.4;">
+                {{ inq.message }}
+              </div>
+            </td>
+            <td style="font-size: 0.8rem; color: var(--text-muted);">
+              {{ inq.created_at.strftime('%d %b %Y, %I:%M %p') }}
+            </td>
+            <td>
+              <div class="action-btn-group">
+                <a href="https://api.whatsapp.com/send?phone={{ inq.phone|replace('+', '')|replace(' ', '') }}&text=Hello%20{{ inq.name }}%2C%20thank%20you%20for%20contacting%20Nature%20Unisex%20Salon%20regarding%20'{{ inq.subject }}'." target="_blank" rel="noopener" class="btn-action" title="Reply on WhatsApp" style="color: #16a34a;">
+                  <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </a>
+                <form action="{{ url_for('admin_delete_enquiry', enquiry_id=inq.id) }}" method="POST" onsubmit="return confirm('Delete this enquiry message?');" style="display: inline;">
+                  <button type="submit" class="btn-action delete" title="Delete Inquiry">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+              No messages found in your inbox.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
