@@ -1,14 +1,28 @@
 import os
+import time
+from collections import defaultdict
 from pathlib import Path
 from datetime import datetime
+from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from config import config
 from models import db, User, Service, Appointment, Gallery, Review, ContactEnquiry, WebsiteSetting
-from utils import save_uploaded_image, build_whatsapp_booking_url, build_whatsapp_general_url, build_whatsapp_enquiry_url, clean_phone_number
+from utils import (
+    save_uploaded_image, 
+    build_whatsapp_booking_url, 
+    build_whatsapp_general_url, 
+    build_whatsapp_enquiry_url, 
+    clean_phone_number,
+    sanitize_text,
+    sanitize_email
+)
 from seed_data import seed_database
+
+# In-memory rate limiting tracking
+login_failed_attempts = defaultdict(list)
 
 def create_app(config_name=None):
     if config_name is None:
@@ -36,6 +50,25 @@ def create_app(config_name=None):
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.get(User, int(user_id))
+    
+    # HTTP Security Headers Middleware (OWASP Top 10 Hardening)
+    @app.after_request
+    def apply_security_headers(response):
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        response.headers['Permissions-Policy'] = 'geolocation=(), camera=(), microphone=()'
+        response.headers['Content-Security-Policy'] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
+            "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; "
+            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; "
+            "img-src 'self' data: https: blob:; "
+            "frame-src https://www.google.com https://maps.google.com; "
+            "connect-src 'self' https://api.whatsapp.com;"
+        )
+        return response
     
     # Template filters for formatting phone and WhatsApp links
     @app.template_filter('clean_wa_phone')
@@ -74,6 +107,7 @@ def create_app(config_name=None):
             'whatsapp_chat_url': whatsapp_url,
             'salon_clean_phone': clean_salon_phone
         }
+
 
 
     # ==========================================
@@ -161,10 +195,14 @@ def create_app(config_name=None):
     def reviews():
         """Customer testimonials & review submission."""
         if request.method == 'POST':
-            name = request.form.get('customer_name', '').strip()
-            rating = int(request.form.get('rating', 5))
-            review_text = request.form.get('review_text', '').strip()
-            service_name = request.form.get('service_name', '').strip()
+            name = sanitize_text(request.form.get('customer_name', ''), max_length=80)
+            rating_val = request.form.get('rating', '5')
+            try:
+                rating = int(rating_val)
+            except ValueError:
+                rating = 5
+            review_text = sanitize_text(request.form.get('review_text', ''), max_length=1500)
+            service_name = sanitize_text(request.form.get('service_name', ''), max_length=100)
             
             if not name or not review_text:
                 flash('Please provide your name and review details.', 'error')
@@ -193,11 +231,11 @@ def create_app(config_name=None):
         enquiry_whatsapp_url = None
         
         if request.method == 'POST':
-            name = request.form.get('name', '').strip()
-            phone = request.form.get('phone', '').strip()
-            email = request.form.get('email', '').strip()
-            subject = request.form.get('subject', 'General Salon Inquiry').strip()
-            message = request.form.get('message', '').strip()
+            name = sanitize_text(request.form.get('name', ''), max_length=80)
+            phone = sanitize_text(request.form.get('phone', ''), max_length=25)
+            email = sanitize_email(request.form.get('email', ''))
+            subject = sanitize_text(request.form.get('subject', 'General Salon Inquiry'), max_length=120)
+            message = sanitize_text(request.form.get('message', ''), max_length=2000)
             
             if not name or not phone or not message:
                 flash('Please fill in your name, phone number, and message.', 'error')
@@ -230,11 +268,11 @@ def create_app(config_name=None):
     def api_enquiry():
         """AJAX endpoint for instant enquiry submission and WhatsApp link generation."""
         data = request.get_json() or request.form
-        name = data.get('name', '').strip()
-        phone = data.get('phone', '').strip()
-        email = data.get('email', '').strip()
-        subject = data.get('subject', 'General Salon Inquiry').strip()
-        message = data.get('message', '').strip()
+        name = sanitize_text(data.get('name', ''), max_length=80)
+        phone = sanitize_text(data.get('phone', ''), max_length=25)
+        email = sanitize_email(data.get('email', ''))
+        subject = sanitize_text(data.get('subject', 'General Salon Inquiry'), max_length=120)
+        message = sanitize_text(data.get('message', ''), max_length=2000)
         
         if not name or not phone or not message:
             return jsonify({'success': False, 'message': 'Please fill all required fields (Name, Phone, Message).'}), 400
@@ -264,7 +302,6 @@ def create_app(config_name=None):
             'whatsapp_url': whatsapp_url
         })
 
-
     @app.route('/booking', methods=['GET', 'POST'])
     def booking():
         """Appointment booking page."""
@@ -273,15 +310,15 @@ def create_app(config_name=None):
         settings = WebsiteSetting.get_settings()
         
         if request.method == 'POST':
-            name = request.form.get('customer_name', '').strip()
-            phone = request.form.get('phone', '').strip()
-            email = request.form.get('email', '').strip()
-            gender = request.form.get('gender', 'Not Specified')
+            name = sanitize_text(request.form.get('customer_name', ''), max_length=80)
+            phone = sanitize_text(request.form.get('phone', ''), max_length=25)
+            email = sanitize_email(request.form.get('email', ''))
+            gender = sanitize_text(request.form.get('gender', 'Not Specified'), max_length=30)
             service_id = request.form.get('service_id', type=int)
-            service_name = request.form.get('service_name', '').strip()
-            app_date = request.form.get('appointment_date', '').strip()
-            app_time = request.form.get('appointment_time', '').strip()
-            notes = request.form.get('message', '').strip()
+            service_name = sanitize_text(request.form.get('service_name', ''), max_length=120)
+            app_date = sanitize_text(request.form.get('appointment_date', ''), max_length=20)
+            app_time = sanitize_text(request.form.get('appointment_time', ''), max_length=20)
+            notes = sanitize_text(request.form.get('message', ''), max_length=1000)
             
             # Validation
             if not name or not phone or not app_date or not app_time:
@@ -289,7 +326,7 @@ def create_app(config_name=None):
                 return redirect(url_for('booking', service_id=service_id))
                 
             if service_id:
-                svc_obj = Service.query.get(service_id)
+                svc_obj = db.session.get(Service, service_id)
                 if svc_obj:
                     service_name = svc_obj.name
             if not service_name:
@@ -337,22 +374,22 @@ def create_app(config_name=None):
     def api_book():
         """AJAX endpoint for instant booking."""
         data = request.get_json() or request.form
-        name = data.get('customer_name', '').strip()
-        phone = data.get('phone', '').strip()
-        email = data.get('email', '').strip()
-        gender = data.get('gender', 'Not Specified')
+        name = sanitize_text(data.get('customer_name', ''), max_length=80)
+        phone = sanitize_text(data.get('phone', ''), max_length=25)
+        email = sanitize_email(data.get('email', ''))
+        gender = sanitize_text(data.get('gender', 'Not Specified'), max_length=30)
         service_id = data.get('service_id')
-        service_name = data.get('service_name', '').strip()
-        app_date = data.get('appointment_date', '').strip()
-        app_time = data.get('appointment_time', '').strip()
-        notes = data.get('message', '').strip()
+        service_name = sanitize_text(data.get('service_name', ''), max_length=120)
+        app_date = sanitize_text(data.get('appointment_date', ''), max_length=20)
+        app_time = sanitize_text(data.get('appointment_time', ''), max_length=20)
+        notes = sanitize_text(data.get('message', ''), max_length=1000)
         
         if not name or not phone or not app_date or not app_time:
             return jsonify({'success': False, 'message': 'Please fill all required booking fields.'}), 400
             
         if service_id:
             try:
-                svc_obj = Service.query.get(int(service_id))
+                svc_obj = db.session.get(Service, int(service_id))
                 if svc_obj:
                     service_name = svc_obj.name
             except Exception:
@@ -398,12 +435,23 @@ def create_app(config_name=None):
 
     @app.route('/admin/login', methods=['GET', 'POST'])
     def admin_login():
-        """Admin authentication login."""
+        """Admin authentication login with brute-force protection and open-redirect defense."""
         if current_user.is_authenticated:
             return redirect(url_for('admin_dashboard'))
             
+        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr or '127.0.0.1').split(',')[0].strip()
+        now = time.time()
+        
+        # Purge failed attempts older than 5 minutes (300 seconds)
+        login_failed_attempts[client_ip] = [t for t in login_failed_attempts[client_ip] if now - t < 300]
+        
+        # Brute-force lockout check
+        if len(login_failed_attempts[client_ip]) >= 5:
+            flash('Security Notice: Too many failed login attempts from your IP. Please wait 5 minutes before trying again.', 'error')
+            return render_template('admin/login.html'), 429
+            
         if request.method == 'POST':
-            username_or_email = request.form.get('username', '').strip()
+            username_or_email = sanitize_text(request.form.get('username', ''), max_length=120)
             password = request.form.get('password', '')
             remember = True if request.form.get('remember') else False
             
@@ -412,12 +460,21 @@ def create_app(config_name=None):
             ).first()
             
             if user and user.check_password(password):
+                login_failed_attempts.pop(client_ip, None) # Reset attempts on success
                 login_user(user, remember=remember)
                 flash(f'Welcome back, {user.username}!', 'success')
                 next_page = request.args.get('next')
+                # Open redirect defense: strictly ensure next_page is a local relative URI
+                if next_page and (not next_page.startswith('/') or next_page.startswith('//')):
+                    next_page = None
                 return redirect(next_page or url_for('admin_dashboard'))
             else:
-                flash('Invalid username/email or password.', 'error')
+                login_failed_attempts[client_ip].append(now)
+                attempts_left = max(0, 5 - len(login_failed_attempts[client_ip]))
+                if attempts_left > 0:
+                    flash(f'Invalid username/email or password. ({attempts_left} attempts remaining)', 'error')
+                else:
+                    flash('Security Notice: Too many failed login attempts. IP temporarily restricted.', 'error')
                 
         return render_template('admin/login.html')
 
@@ -428,6 +485,7 @@ def create_app(config_name=None):
         logout_user()
         flash('You have been signed out safely.', 'info')
         return redirect(url_for('admin_login'))
+
 
     @app.route('/admin')
     @app.route('/admin/dashboard')
@@ -746,22 +804,22 @@ def create_app(config_name=None):
         settings = WebsiteSetting.get_settings()
         
         if request.method == 'POST':
-            settings.salon_name = request.form.get('salon_name', settings.salon_name).strip()
-            settings.tagline = request.form.get('tagline', settings.tagline).strip()
-            settings.phone = request.form.get('phone', settings.phone).strip()
-            settings.whatsapp_number = request.form.get('whatsapp_number', settings.whatsapp_number).strip()
-            settings.email = request.form.get('email', settings.email).strip()
-            settings.address = request.form.get('address', settings.address).strip()
-            settings.google_maps_url = request.form.get('google_maps_url', settings.google_maps_url).strip()
+            settings.salon_name = sanitize_text(request.form.get('salon_name', settings.salon_name), max_length=100)
+            settings.tagline = sanitize_text(request.form.get('tagline', settings.tagline), max_length=150)
+            settings.phone = sanitize_text(request.form.get('phone', settings.phone), max_length=25)
+            settings.whatsapp_number = sanitize_text(request.form.get('whatsapp_number', settings.whatsapp_number), max_length=25)
+            settings.email = sanitize_email(request.form.get('email', settings.email))
+            settings.address = sanitize_text(request.form.get('address', settings.address), max_length=300)
+            settings.google_maps_url = sanitize_text(request.form.get('google_maps_url', settings.google_maps_url), max_length=500)
             settings.google_maps_embed = request.form.get('google_maps_embed', settings.google_maps_embed).strip()
-            settings.instagram_url = request.form.get('instagram_url', settings.instagram_url).strip()
-            settings.facebook_url = request.form.get('facebook_url', settings.facebook_url).strip()
-            settings.opening_hours_weekdays = request.form.get('opening_hours_weekdays', settings.opening_hours_weekdays).strip()
-            settings.opening_hours_weekends = request.form.get('opening_hours_weekends', settings.opening_hours_weekends).strip()
-            settings.hero_headline = request.form.get('hero_headline', settings.hero_headline).strip()
-            settings.hero_subtext = request.form.get('hero_subtext', settings.hero_subtext).strip()
-            settings.about_text = request.form.get('about_text', settings.about_text).strip()
-            settings.currency_symbol = request.form.get('currency_symbol', settings.currency_symbol).strip()
+            settings.instagram_url = sanitize_text(request.form.get('instagram_url', settings.instagram_url), max_length=250)
+            settings.facebook_url = sanitize_text(request.form.get('facebook_url', settings.facebook_url), max_length=250)
+            settings.opening_hours_weekdays = sanitize_text(request.form.get('opening_hours_weekdays', settings.opening_hours_weekdays), max_length=100)
+            settings.opening_hours_weekends = sanitize_text(request.form.get('opening_hours_weekends', settings.opening_hours_weekends), max_length=100)
+            settings.hero_headline = sanitize_text(request.form.get('hero_headline', settings.hero_headline), max_length=150)
+            settings.hero_subtext = sanitize_text(request.form.get('hero_subtext', settings.hero_subtext), max_length=300)
+            settings.about_text = sanitize_text(request.form.get('about_text', settings.about_text), max_length=1500)
+            settings.currency_symbol = sanitize_text(request.form.get('currency_symbol', settings.currency_symbol), max_length=5)
             
             db.session.commit()
             flash('Salon website settings updated successfully!', 'success')
@@ -772,20 +830,20 @@ def create_app(config_name=None):
     @app.route('/admin/profile', methods=['POST'])
     @login_required
     def admin_update_profile():
-        """Update admin password or credentials."""
+        """Update admin password or credentials with validation."""
         current_pwd = request.form.get('current_password', '')
         new_pwd = request.form.get('new_password', '')
         confirm_pwd = request.form.get('confirm_password', '')
-        new_username = request.form.get('username', '').strip()
-        new_email = request.form.get('email', '').strip()
+        new_username = sanitize_text(request.form.get('username', ''), max_length=60)
+        new_email = sanitize_email(request.form.get('email', ''))
         
         if not current_user.check_password(current_pwd):
             flash('Incorrect current password.', 'error')
             return redirect(url_for('admin_settings'))
             
         if new_pwd:
-            if len(new_pwd) < 6:
-                flash('New password must be at least 6 characters.', 'error')
+            if len(new_pwd) < 8:
+                flash('New password must be at least 8 characters long for security.', 'error')
                 return redirect(url_for('admin_settings'))
             if new_pwd != confirm_pwd:
                 flash('New passwords do not match.', 'error')
@@ -801,16 +859,26 @@ def create_app(config_name=None):
         flash('Admin profile credentials updated successfully.', 'success')
         return redirect(url_for('admin_settings'))
 
+
     # ==========================================
-    # ERROR HANDLERS
+    # ERROR HANDLERS (Clean non-leaking responses)
     # ==========================================
+    @app.errorhandler(403)
+    def forbidden(e):
+        return render_template('404.html'), 403
+
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template('404.html'), 404
 
+    @app.errorhandler(429)
+    def ratelimit_handler(e):
+        return render_template('404.html'), 429
+
     @app.errorhandler(500)
     def internal_server_error(e):
         return render_template('500.html'), 500
+
 
     return app
 
