@@ -295,6 +295,15 @@ p {
   width: 100%;
 }
 
+/* Mobile-only drawer elements hidden on desktop */
+.nav-mobile-actions {
+  display: none;
+}
+
+.nav-backdrop {
+  display: none;
+}
+
 .nav-actions {
   display: flex;
   align-items: center;
