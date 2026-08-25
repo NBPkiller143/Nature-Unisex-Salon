@@ -408,6 +408,13 @@ p {
   padding: 6rem 0;
 }
 
+/* Page Hero Banner for Subpages */
+.page-hero-banner {
+  background: linear-gradient(rgba(15, 46, 33, 0.85), rgba(15, 46, 33, 0.9)), url('/static/images/hero_salon.jpg') center/cover no-repeat;
+  color: #ffffff;
+  text-align: center;
+}
+
 .hero-content {
   max-width: 760px;
 }
