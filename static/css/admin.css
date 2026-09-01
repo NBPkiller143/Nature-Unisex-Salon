@@ -386,6 +386,68 @@ body {
   border-color: var(--status-cancelled);
 }
 
+.btn-whatsapp-action {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+  border-color: rgba(22, 163, 74, 0.2);
+}
+
+.btn-whatsapp-action:hover {
+  background: #16a34a;
+  color: #ffffff;
+  border-color: #16a34a;
+}
+
+/* Filter Navigation Pills */
+.filter-pill {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.825rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: #ffffff;
+  color: var(--text-main);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.filter-pill:hover {
+  background: #f1f5f9;
+}
+
+.filter-pill.active-all {
+  background: var(--admin-primary);
+  color: #ffffff;
+  border-color: var(--admin-primary);
+}
+
+.filter-pill.active-pending {
+  background: var(--status-pending);
+  color: #ffffff;
+  border-color: var(--status-pending);
+}
+
+.filter-pill.active-confirmed {
+  background: var(--status-confirmed);
+  color: #ffffff;
+  border-color: var(--status-confirmed);
+}
+
+.filter-pill.active-completed {
+  background: var(--status-completed);
+  color: #ffffff;
+  border-color: var(--status-completed);
+}
+
+.filter-pill.active-cancelled {
+  background: var(--status-cancelled);
+  color: #ffffff;
+  border-color: var(--status-cancelled);
+}
+
 /* Forms in Admin */
 .admin-form-group {
   margin-bottom: 1.25rem;
