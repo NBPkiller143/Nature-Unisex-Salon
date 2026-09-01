@@ -5,25 +5,25 @@
 
 {% block admin_content %}
 
-<!-- Live Alert Banner (Hidden by default, shown when new WhatsApp/Web bookings arrive) -->
-<div id="liveBookingAlert" style="display: none; background: #ecfdf5; border: 1px solid #10b981; border-radius: var(--radius-md); padding: 1rem 1.5rem; margin-bottom: 1.5rem; justify-content: space-between; align-items: center;">
+<!-- Live Alert Banner (Displayed when new WhatsApp/Web bookings arrive) -->
+<div id="liveBookingAlert" style="display: none; background: #ecfdf5; border: 1px solid #10b981; border-radius: var(--radius-md); padding: 1rem 1.5rem; margin-bottom: 1.5rem; justify-content: space-between; align-items: center; box-shadow: var(--shadow-card);">
   <div style="display: flex; align-items: center; gap: 0.75rem;">
-    <i class="fa-brands fa-whatsapp" style="color: #10b981; font-size: 1.5rem;"></i>
+    <i class="fa-brands fa-whatsapp" style="color: #10b981; font-size: 1.6rem;"></i>
     <div>
-      <strong style="color: #065f46;">New Booking Received!</strong>
-      <div style="font-size: 0.85rem; color: #047857;">A new customer appointment was just logged. Click refresh to view details.</div>
+      <strong style="color: #065f46; font-size: 0.95rem;">New Appointment Received!</strong>
+      <div style="font-size: 0.82rem; color: #047857;">A new customer appointment was just logged. Click to refresh the queue.</div>
     </div>
   </div>
-  <button type="button" class="btn-action" style="background: #10b981; color: #ffffff;" onclick="window.location.reload()">
+  <button type="button" class="btn-action" style="background: #10b981; color: #ffffff; font-weight: 600;" onclick="window.location.reload()">
     <i class="fa-solid fa-rotate-right"></i> Refresh Now
   </button>
 </div>
 
-<!-- Filter & Quick Action Bar -->
-<div class="admin-card" style="padding: 1.25rem 1.5rem;">
+<!-- Filter & Action Bar -->
+<div class="admin-card" style="padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
   <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
     
-    <!-- Status Filter Pills -->
+    <!-- Status Filter Buttons -->
     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
       <a href="{{ url_for('admin_appointments', status='all', search=search_query) }}" class="btn-action {% if active_status == 'all' %}active{% endif %}" style="{% if active_status == 'all' %}background: var(--admin-primary); color: #ffffff;{% endif %}">
         All Bookings
@@ -65,11 +65,11 @@
   </div>
 </div>
 
-<!-- Appointments Data Table Card -->
+<!-- Appointments Table Card -->
 <div class="admin-card">
   <div class="card-header-flex">
     <h3>Appointments & Review Queue ({{ appointments|length }})</h3>
-    <span style="font-size: 0.82rem; color: var(--text-muted);"><i class="fa-solid fa-signal" style="color: #10b981;"></i> WhatsApp Sync Active</span>
+    <span style="font-size: 0.82rem; color: var(--text-muted);"><i class="fa-solid fa-signal" style="color: #10b981;"></i> WhatsApp Auto-Sync Active</span>
   </div>
 
   <div class="table-responsive">
@@ -83,7 +83,7 @@
           <th>Schedule</th>
           <th>Review & Status</th>
           <th>Notes / Source</th>
-          <th style="min-width: 170px;">WhatsApp & Actions</th>
+          <th style="min-width: 180px;">WhatsApp & Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -122,8 +122,8 @@
             </td>
             <td>
               <div class="action-btn-group">
-                <!-- 1-Click WhatsApp Confirmation Message -->
-                <a href="{{ build_whatsapp_admin_confirmation_url(app.phone, app.customer_name, app.service_name, app.appointment_date, app.appointment_time, settings.address if settings else '12 Anjaneya Temple St, Bengaluru') }}" target="_blank" rel="noopener" class="btn-action" title="Send WhatsApp Confirmation" style="color: #16a34a; background: rgba(22, 163, 74, 0.1);">
+                <!-- 1-Click WhatsApp Confirmation Link -->
+                <a href="{{ build_whatsapp_admin_confirmation_url(app.phone, app.customer_name, app.service_name, app.appointment_date, app.appointment_time, settings.address if settings else '12, Anjaneya Temple St, Bengaluru') }}" target="_blank" rel="noopener" class="btn-action" title="Send WhatsApp Confirmation" style="color: #16a34a; background: rgba(22, 163, 74, 0.1);">
                   <i class="fa-brands fa-whatsapp"></i> Confirm
                 </a>
 
@@ -137,7 +137,7 @@
                   <i class="fa-regular fa-bell"></i>
                 </a>
 
-                <!-- Edit Status Trigger -->
+                <!-- Update Status Trigger -->
                 <button type="button" class="btn-action" title="Update Status & Specialist Notes" onclick="openStatusModal({{ app.id }}, '{{ app.customer_name|escape }}', '{{ app.status }}', '{{ (app.admin_notes or '')|escape }}')">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
@@ -155,7 +155,7 @@
           <tr>
             <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-muted);">
               <i class="fa-regular fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; color: #9ca3af;"></i>
-              No appointments found in this category.
+              No appointments found matching your selection.
             </td>
           </tr>
         {% endfor %}
@@ -166,13 +166,13 @@
 
 <!-- Modal: Quick Add WhatsApp / Direct Booking -->
 <div class="admin-modal" id="quickAddModal">
-  <div class="modal-card" style="max-width: 540px;">
+  <div class="modal-card" style="max-width: 560px;">
     <div class="modal-header">
       <div style="display: flex; align-items: center; gap: 0.5rem;">
         <i class="fa-brands fa-whatsapp" style="color: #16a34a; font-size: 1.3rem;"></i>
         <h3 style="margin: 0;">Log WhatsApp / Direct Booking</h3>
       </div>
-      <button class="modal-close" onclick="closeModal('quickAddModal')">&times;</button>
+      <button type="button" class="modal-close" onclick="closeModal('quickAddModal')">&times;</button>
     </div>
     <form action="{{ url_for('admin_quick_add_appointment') }}" method="POST">
       <div class="modal-body">
@@ -198,7 +198,7 @@
             </select>
           </div>
           <div class="admin-form-group">
-            <label class="admin-form-label">Status *</label>
+            <label class="admin-form-label">Initial Status *</label>
             <select name="status" class="admin-form-control" required>
               <option value="Pending">Pending Review</option>
               <option value="Confirmed" selected>Confirmed (Slot Reserved)</option>
@@ -208,7 +208,7 @@
         </div>
 
         <div class="admin-form-group">
-          <label class="admin-form-label">Service *</label>
+          <label class="admin-form-label">Select Service *</label>
           <select name="service_name" class="admin-form-control" required>
             <optgroup label="Men's Services">
               {% for s in services if s.gender_target == 'Men' %}
@@ -226,10 +226,10 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
           <div class="admin-form-group">
             <label class="admin-form-label">Appointment Date *</label>
-            <input type="date" name="appointment_date" class="admin-form-control" required value="{{ current_year }}-09-01">
+            <input type="date" name="appointment_date" id="quickAddDate" class="admin-form-control" required>
           </div>
           <div class="admin-form-group">
-            <label class="admin-form-label">Time Slot (24-Hour) *</label>
+            <label class="admin-form-label">Time Slot (09:00 - 21:00) *</label>
             <select name="appointment_time" class="admin-form-control" required>
               <option value="09:00">09:00</option>
               <option value="09:30">09:30</option>
@@ -261,7 +261,7 @@
 
         <div class="admin-form-group">
           <label class="admin-form-label">Customer Message / WhatsApp Notes</label>
-          <textarea name="message" class="admin-form-control" rows="2" placeholder="e.g. Inquired via WhatsApp for haircut + beard trim slot at 18:00"></textarea>
+          <textarea name="message" class="admin-form-control" rows="2" placeholder="e.g. Inquired via WhatsApp for haircut slot at 18:00"></textarea>
         </div>
 
       </div>
@@ -275,12 +275,12 @@
   </div>
 </div>
 
-<!-- Status Update Modal -->
+<!-- Modal: Status Update & Review -->
 <div class="admin-modal" id="statusModal">
   <div class="modal-card">
     <div class="modal-header">
       <h3 id="statusModalTitle">Review & Update Appointment</h3>
-      <button class="modal-close" onclick="closeModal('statusModal')">&times;</button>
+      <button type="button" class="modal-close" onclick="closeModal('statusModal')">&times;</button>
     </div>
     <form id="updateStatusForm" method="POST">
       <div class="modal-body">
@@ -308,6 +308,15 @@
 </div>
 
 <script>
+  // Set default date for Quick Add modal to today
+  document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('quickAddDate');
+    if (dateInput) {
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.value = today;
+    }
+  });
+
   function openQuickAddModal() {
     const modal = document.getElementById('quickAddModal');
     if (modal) modal.classList.add('active');
@@ -331,6 +340,22 @@
     const modal = document.getElementById(modalId);
     if (modal) modal.classList.remove('active');
   }
+
+  // Close modals when clicking backdrop
+  window.addEventListener('click', function(e) {
+    if (e.target.classList.contains('admin-modal')) {
+      e.target.classList.remove('active');
+    }
+  });
+
+  // Close modals on Escape key
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.admin-modal.active').forEach(modal => {
+        modal.classList.remove('active');
+      });
+    }
+  });
 
   // Live Auto-Poll for Incoming WhatsApp / Web Bookings every 15 seconds
   let lastKnownLatestId = {{ appointments[0].id if appointments else 0 }};
