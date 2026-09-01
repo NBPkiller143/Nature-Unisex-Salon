@@ -302,7 +302,8 @@ p {
 }
 
 /* Mobile-only drawer elements hidden on desktop */
-.nav-mobile-actions {
+.nav-mobile-actions,
+.nav-drawer-header {
   display: none;
 }
 
@@ -1339,21 +1340,22 @@ p {
     position: fixed;
     top: 0;
     right: 0;
-    width: 80%;
+    width: 82%;
     max-width: 320px;
     height: 100vh;
     height: 100dvh;
     background: #ffffff;
     flex-direction: column;
     align-items: flex-start;
-    padding: 5rem 1.75rem 2.5rem 1.75rem;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+    padding: 1.25rem 1.5rem 2.5rem 1.5rem;
+    box-shadow: -10px 0 35px rgba(0, 0, 0, 0.25);
     z-index: 1050;
     transform: translateX(105%);
     visibility: hidden;
     pointer-events: none;
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     gap: 0.25rem;
     display: flex !important;
   }
@@ -1362,6 +1364,54 @@ p {
     transform: translateX(0);
     visibility: visible;
     pointer-events: auto;
+  }
+
+  .nav-drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .drawer-brand {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drawer-brand-title {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.1;
+  }
+
+  .drawer-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-light);
+    background: var(--bg-soft);
+    color: var(--primary);
+    font-size: 1.35rem;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: all var(--transition-fast);
+  }
+
+  .drawer-close-btn:hover, .drawer-close-btn:active {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    transform: scale(1.05);
   }
 
   .nav-link {
@@ -1418,16 +1468,25 @@ p {
     -webkit-backdrop-filter: blur(4px);
     z-index: 1040;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.3s ease;
   }
 
   .nav-backdrop.active {
     display: block;
     opacity: 1;
+    pointer-events: auto;
   }
 
   body.nav-open {
     overflow: hidden;
+  }
+
+  body.nav-open .floating-whatsapp {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
   }
 
   /* Layout grids stack gracefully */

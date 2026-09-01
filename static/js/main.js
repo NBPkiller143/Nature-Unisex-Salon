@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const mobileToggle = document.getElementById('mobileMenuToggle') || document.querySelector('.mobile-toggle');
   const navLinks = document.getElementById('navLinks') || document.querySelector('.nav-links');
   const navBackdrop = document.getElementById('navBackdrop') || document.querySelector('.nav-backdrop');
+  const drawerCloseBtn = document.getElementById('drawerCloseBtn') || document.querySelector('.drawer-close-btn');
 
   function openMobileMenu() {
     if (!navLinks) return;
@@ -45,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (mobileToggle && navLinks) {
     mobileToggle.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
       if (navLinks.classList.contains('active')) {
         closeMobileMenu();
@@ -53,11 +55,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    navBackdrop?.addEventListener('click', closeMobileMenu);
+    // Dedicated drawer close button inside the menu
+    if (drawerCloseBtn) {
+      drawerCloseBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeMobileMenu();
+      });
+    }
+
+    // Tap backdrop to close
+    if (navBackdrop) {
+      navBackdrop.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeMobileMenu();
+      });
+    }
 
     // Close menu when clicking any nav link
     document.querySelectorAll('.nav-link, .nav-mobile-actions a').forEach(link => {
-      link.addEventListener('click', closeMobileMenu);
+      link.addEventListener('click', () => {
+        closeMobileMenu();
+      });
     });
 
     // Close on Escape key
@@ -66,6 +86,25 @@ document.addEventListener('DOMContentLoaded', () => {
         closeMobileMenu();
       }
     });
+
+    // Swipe right to close gesture on mobile touchscreens
+    let touchStartX = 0;
+    let touchStartY = 0;
+    navLinks.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    navLinks.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = Math.abs(touchEndY - touchStartY);
+      // If horizontal swipe to the right > 50px and vertical drift < 60px
+      if (diffX > 50 && diffY < 60) {
+        closeMobileMenu();
+      }
+    }, { passive: true });
   }
 
   // 3. Client-Side Service Catalog Filtering (Instant Filter)
