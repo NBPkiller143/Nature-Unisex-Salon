@@ -138,6 +138,10 @@ class NatureSalonTestSuite(unittest.TestCase):
         svc = Service.query.filter_by(name='Charcoal Detox Scalp Ritual').first()
         self.assertIsNotNone(svc)
         self.assertEqual(svc.price, 850.0)
+        
+        # Clean up test-created service so only authentic menu items remain in DB
+        db.session.delete(svc)
+        db.session.commit()
 
         # 3. Update Settings and then restore real production settings
         settings_data = {
