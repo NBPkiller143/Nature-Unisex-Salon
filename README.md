@@ -133,7 +133,7 @@ In the **Environment** tab on Render, add:
 - `SALON_PHONE` = `+91 74837 37517`
 - `SALON_WHATSAPP` = `917483737517`
 - `SALON_EMAIL` = `info@natureunisexsalon.com`
-- `SALON_ADDRESS` = `Nature Unisex Salon, Austin Town / Neelasandra, Bengaluru, Karnataka 560047, India`
+- `SALON_ADDRESS` = `Kashi Vishwanatha, 12, Anjaneya Temple Street, Vannarpet, Yerappa Garden, Austin Town, Neelasandra, Bengaluru, Karnataka 560047, India`
 - `ADMIN_USERNAME` = `admin`
 - `ADMIN_PASSWORD` = `YourProductionAdminPassword2026`
 
@@ -157,7 +157,6 @@ nature-unisex-salon/
 ├── utils.py                   # Secure file uploads & WhatsApp link generation
 ├── seed_data.py               # Auto-seeding initial salon services, reviews & gallery
 ├── init_admin.py              # CLI utility to create or reset admin credentials
-├── setup_images.py            # Local asset organizer
 ├── requirements.txt           # Python package dependencies
 ├── Procfile                   # Production WSGI process declaration for Render
 ├── runtime.txt                # Python runtime target

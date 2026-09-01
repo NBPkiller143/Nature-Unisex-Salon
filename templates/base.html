@@ -30,11 +30,11 @@
       <div class="top-bar-items">
         <div class="top-bar-item">
           <i class="fa-solid fa-location-dot"></i>
-          <span>{{ settings.address if settings else 'Nature Unisex Salon, Austin Town / Neelasandra, Bengaluru' }}</span>
+          <span>{{ settings.address if settings else '12, Anjaneya Temple St, Vannarpet, Neelasandra, Bengaluru' }}</span>
         </div>
         <div class="top-bar-item">
           <i class="fa-solid fa-clock"></i>
-          <span>{{ settings.opening_hours_weekdays if settings else 'Mon - Sat: 9 AM - 9 PM' }}</span>
+          <span>{{ settings.opening_hours_weekdays if settings else 'Everyday: 09:00 - 21:00' }}</span>
         </div>
       </div>
       <div class="top-bar-items">
@@ -164,11 +164,11 @@
 
         <div class="footer-col">
           <h4>Visit & Contact</h4>
-          <p style="margin-bottom: 0.6rem;"><i class="fa-solid fa-location-dot text-gold" style="margin-right: 0.5rem;"></i> {{ settings.address if settings else 'Nature Unisex Salon, Austin Town / Neelasandra, Bengaluru, Karnataka 560047, India' }}</p>
+          <p style="margin-bottom: 0.6rem;"><i class="fa-solid fa-location-dot text-gold" style="margin-right: 0.5rem;"></i> {{ settings.address if settings else 'Kashi Vishwanatha, 12, Anjaneya Temple Street, Vannarpet, Yerappa Garden, Austin Town, Neelasandra, Bengaluru, Karnataka 560047, India' }}</p>
           <p style="margin-bottom: 0.6rem;"><i class="fa-solid fa-phone text-gold" style="margin-right: 0.5rem;"></i> {{ settings.phone if settings else '+91 74837 37517' }}</p>
           <p style="margin-bottom: 0.6rem;"><i class="fa-solid fa-envelope text-gold" style="margin-right: 0.5rem;"></i> {{ settings.email if settings else 'info@natureunisexsalon.com' }}</p>
-          <p style="margin-bottom: 0.6rem;"><i class="fa-solid fa-clock text-gold" style="margin-right: 0.5rem;"></i> {{ settings.opening_hours_weekdays if settings else 'Mon - Sat: 9 AM - 9 PM' }}</p>
-          <p style="margin-bottom: 1.2rem;"><i class="fa-regular fa-clock text-gold" style="margin-right: 0.5rem;"></i> {{ settings.opening_hours_weekends if settings else 'Sun: 10 AM - 8 PM' }}</p>
+          <p style="margin-bottom: 0.6rem;"><i class="fa-solid fa-clock text-gold" style="margin-right: 0.5rem;"></i> {{ settings.opening_hours_weekdays if settings else 'Sunday - Monday: 09:00 - 21:00' }}</p>
+          <p style="margin-bottom: 1.2rem;"><i class="fa-regular fa-clock text-gold" style="margin-right: 0.5rem;"></i> {{ settings.opening_hours_weekends if settings else 'Everyday: 09:00 - 21:00 (Open All 7 Days)' }}</p>
           <a href="{{ settings.google_maps_url if settings else '#' }}" target="_blank" rel="noopener" class="btn btn-outline-gold btn-sm">
             <i class="fa-solid fa-diamond-turn-right"></i> Get Directions
           </a>

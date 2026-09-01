@@ -39,7 +39,7 @@ class Config:
     SALON_PHONE = os.environ.get('SALON_PHONE', '+91 74837 37517')
     SALON_WHATSAPP = os.environ.get('SALON_WHATSAPP', '917483737517')
     SALON_EMAIL = os.environ.get('SALON_EMAIL', 'info@natureunisexsalon.com')
-    SALON_ADDRESS = os.environ.get('SALON_ADDRESS', 'Nature Unisex Salon, Austin Town / Neelasandra, Bengaluru, Karnataka 560047, India')
+    SALON_ADDRESS = os.environ.get('SALON_ADDRESS', 'Kashi Vishwanatha, 12, Anjaneya Temple Street, Vannarpet, Yerappa Garden, Austin Town, Neelasandra, Bengaluru, Karnataka 560047, India')
 
 class DevelopmentConfig(Config):
     """Development configuration."""

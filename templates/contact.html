@@ -28,7 +28,7 @@
           <div class="contact-item-icon"><i class="fa-solid fa-location-dot"></i></div>
           <div class="contact-item-text">
             <h5>Salon Address</h5>
-            <p>{{ settings.address if settings else 'Nature Unisex Salon, Austin Town / Neelasandra, Bengaluru, Karnataka 560047, India' }}</p>
+            <p>{{ settings.address if settings else 'Kashi Vishwanatha, 12, Anjaneya Temple Street, Vannarpet, Yerappa Garden, Austin Town, Neelasandra, Bengaluru, Karnataka 560047, India' }}</p>
           </div>
         </div>
 
@@ -60,20 +60,20 @@
           <div class="contact-item-icon"><i class="fa-solid fa-clock"></i></div>
           <div class="contact-item-text">
             <h5>Opening Hours</h5>
-            <p>{{ settings.opening_hours_weekdays if settings else 'Mon - Sat: 9:00 AM - 9:00 PM' }}</p>
-            <p style="margin-top: 0.2rem;">{{ settings.opening_hours_weekends if settings else 'Sun: 10:00 AM - 8:00 PM' }}</p>
+            <p>{{ settings.opening_hours_weekdays if settings else 'Sunday - Monday: 09:00 - 21:00' }}</p>
+            <p style="margin-top: 0.2rem;">{{ settings.opening_hours_weekends if settings else 'Everyday: 09:00 - 21:00 (Open All 7 Days)' }}</p>
           </div>
         </div>
 
         <div style="margin-top: 1.5rem;">
-          <a href="{{ settings.google_maps_url if settings else '#' }}" target="_blank" rel="noopener" class="btn btn-gold" style="width: 100%;">
+          <a href="{{ settings.google_maps_url if settings else 'https://www.google.com/maps/place/Nature+unisex+salon/@12.9570761,77.6192442,15z/data=!4m6!3m5!1s0x3bae156290e25a91:0x923594a7d37cb230!8m2!3d12.9565087!4d77.6196044!16s%2Fg%2F11z1zkml55?entry=ttu' }}" target="_blank" rel="noopener" class="btn btn-gold" style="width: 100%;">
             <i class="fa-solid fa-diamond-turn-right"></i> Open In Google Maps / Get Directions
           </a>
         </div>
 
         <!-- Embedded Map -->
         <div class="map-container">
-          <iframe src="{{ settings.google_maps_embed if settings and settings.google_maps_embed else 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3504.6053337929424!2d77.3209553!3d28.566587!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce45049963e63%3A0x6b1070624cbef218!2sSector%2018%2C%20Noida%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin' }}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Salon Location"></iframe>
+          <iframe src="{{ settings.google_maps_embed if settings and settings.google_maps_embed else 'https://maps.google.com/maps?q=12.9565087,77.6196044+(Nature%20Unisex%20Salon)&t=&z=16&ie=UTF8&iwloc=B&output=embed' }}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Salon Location"></iframe>
         </div>
 
       </div>

@@ -147,9 +147,9 @@ class NatureSalonTestSuite(unittest.TestCase):
             'whatsapp_number': '917483737517',
             'email': 'info@natureunisexsalon.com',
             'currency_symbol': '₹',
-            'address': 'Nature Unisex Salon, Austin Town / Neelasandra, Bengaluru, Karnataka 560047, India',
-            'opening_hours_weekdays': 'Mon - Sat: 9:00 AM - 9:00 PM',
-            'opening_hours_weekends': 'Sun: 10:00 AM - 8:00 PM',
+            'address': 'Kashi Vishwanatha, 12, Anjaneya Temple Street, Vannarpet, Yerappa Garden, Austin Town, Neelasandra, Bengaluru, Karnataka 560047, India',
+            'opening_hours_weekdays': 'Sunday - Monday: 09:00 - 21:00',
+            'opening_hours_weekends': 'Everyday: 09:00 - 21:00 (Open All 7 Days)',
             'google_maps_url': 'https://www.google.com/maps/place/Nature+unisex+salon/@12.9570761,77.6192442,15z/data=!4m6!3m5!1s0x3bae156290e25a91:0x923594a7d37cb230!8m2!3d12.9565087!4d77.6196044!16s%2Fg%2F11z1zkml55',
             'google_maps_embed': 'https://maps.google.com/maps?q=12.9565087,77.6196044+(Nature%20Unisex%20Salon)&t=&z=16&ie=UTF8&iwloc=B&output=embed',
             'instagram_url': 'https://instagram.com/natureunisexsalon',
@@ -163,7 +163,7 @@ class NatureSalonTestSuite(unittest.TestCase):
         
         setting = WebsiteSetting.get_settings()
         self.assertEqual(setting.salon_name, 'Nature Unisex Salon')
-        self.assertEqual(setting.address, 'Nature Unisex Salon, Austin Town / Neelasandra, Bengaluru, Karnataka 560047, India')
+        self.assertEqual(setting.address, 'Kashi Vishwanatha, 12, Anjaneya Temple Street, Vannarpet, Yerappa Garden, Austin Town, Neelasandra, Bengaluru, Karnataka 560047, India')
         print("[PASS] Admin CRUD operations (status update, service add, settings update) verified successfully.")
 
 if __name__ == '__main__':

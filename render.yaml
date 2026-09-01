@@ -17,3 +17,5 @@ services:
         value: "+91 74837 37517"
       - key: SALON_WHATSAPP
         value: "917483737517"
+      - key: SALON_ADDRESS
+        value: "Kashi Vishwanatha, 12, Anjaneya Temple Street, Vannarpet, Yerappa Garden, Austin Town, Neelasandra, Bengaluru, Karnataka 560047, India"
