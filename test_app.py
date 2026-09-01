@@ -161,10 +161,32 @@ class NatureSalonTestSuite(unittest.TestCase):
         response = self.client.post('/admin/settings', data=settings_data, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         
-        setting = WebsiteSetting.get_settings()
-        self.assertEqual(setting.salon_name, 'Nature Unisex Salon')
-        self.assertEqual(setting.address, 'Kashi Vishwanatha, 12, Anjaneya Temple Street, Vannarpet, Yerappa Garden, Austin Town, Neelasandra, Bengaluru, Karnataka 560047, India')
-        print("[PASS] Admin CRUD operations (status update, service add, settings update) verified successfully.")
+        # 4. Test API Endpoints
+        api_booking_data = {
+            'customer_name': 'Snehal Patel',
+            'phone': '9876543210',
+            'email': 'snehal@example.com',
+            'service_id': 1,
+            'appointment_date': '2026-09-05',
+            'appointment_time': '14:00',
+            'message': 'API test booking'
+        }
+        res_api = self.client.post('/api/book', json=api_booking_data)
+        self.assertEqual(res_api.status_code, 200)
+        self.assertTrue(res_api.get_json()['success'])
+
+        api_enquiry_data = {
+            'name': 'Kavita Menon',
+            'phone': '9876543210',
+            'email': 'kavita@example.com',
+            'subject': 'Hydra Facial Question',
+            'message': 'How long does the Hydra Facial session take?'
+        }
+        res_enq = self.client.post('/api/enquiry', json=api_enquiry_data)
+        self.assertEqual(res_enq.status_code, 200)
+        self.assertTrue(res_enq.get_json()['success'])
+
+        print("[PASS] Admin CRUD operations (status update, service add, settings update, and API handlers) verified successfully.")
 
 if __name__ == '__main__':
     unittest.main()

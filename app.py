@@ -590,10 +590,19 @@ def create_app(config_name=None):
         gender_target = request.form.get('gender_target', 'Unisex')
         category = request.form.get('category', 'Hair')
         description = request.form.get('description', '').strip()
-        price = float(request.form.get('price', 0.0))
-        duration_mins = int(request.form.get('duration_mins', 30))
+        try:
+            price = float(request.form.get('price', 0.0) or 0.0)
+        except (ValueError, TypeError):
+            price = 0.0
+        try:
+            duration_mins = int(request.form.get('duration_mins', 30) or 30)
+        except (ValueError, TypeError):
+            duration_mins = 30
         is_active = True if request.form.get('is_active') == 'on' else False
-        display_order = int(request.form.get('display_order', 0))
+        try:
+            display_order = int(request.form.get('display_order', 0) or 0)
+        except (ValueError, TypeError):
+            display_order = 0
         
         image_file = request.files.get('image_file')
         image_url = None
@@ -632,10 +641,19 @@ def create_app(config_name=None):
         service.gender_target = request.form.get('gender_target', service.gender_target)
         service.category = request.form.get('category', service.category)
         service.description = request.form.get('description', '').strip()
-        service.price = float(request.form.get('price', service.price))
-        service.duration_mins = int(request.form.get('duration_mins', service.duration_mins))
+        try:
+            service.price = float(request.form.get('price', service.price) or 0.0)
+        except (ValueError, TypeError):
+            pass
+        try:
+            service.duration_mins = int(request.form.get('duration_mins', service.duration_mins) or 30)
+        except (ValueError, TypeError):
+            pass
         service.is_active = True if request.form.get('is_active') == 'on' else False
-        service.display_order = int(request.form.get('display_order', service.display_order))
+        try:
+            service.display_order = int(request.form.get('display_order', service.display_order) or 0)
+        except (ValueError, TypeError):
+            pass
         
         image_file = request.files.get('image_file')
         if image_file and image_file.filename:
