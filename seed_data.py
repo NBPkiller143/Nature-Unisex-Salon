@@ -98,7 +98,7 @@ def seed_database():
                 "description": "20-minute relaxing scalp and shoulder acupressure oil massage to relieve tension.",
                 "price": 200.0,
                 "duration_mins": 20,
-                "image_url": "/static/images/services/unisex_head_massage.jpg",
+                "image_url": "/static/images/services/men_head_massage.jpg",
                 "display_order": 5
             },
             {
@@ -108,7 +108,7 @@ def seed_database():
                 "description": "10-minute revitalizing pure coconut oil head massage for scalp nourishment.",
                 "price": 150.0,
                 "duration_mins": 10,
-                "image_url": "/static/images/services/unisex_head_massage.jpg",
+                "image_url": "/static/images/services/men_head_massage.jpg",
                 "display_order": 6
             },
             # --- Spa ---
@@ -252,7 +252,7 @@ def seed_database():
                 "description": "Fast sun-tan removal pack and face cleansing for an instantly brighter tone.",
                 "price": 299.0,
                 "duration_mins": 25,
-                "image_url": "/static/images/services/unisex_detan.jpg",
+                "image_url": "/static/images/services/men_detan.jpg",
                 "display_order": 20
             },
             {
@@ -262,7 +262,7 @@ def seed_database():
                 "description": "Deep pore scrub, steam, blackhead extraction, and cooling face pack.",
                 "price": 600.0,
                 "duration_mins": 35,
-                "image_url": "/static/images/services/men_facial.jpg",
+                "image_url": "/static/images/services/men_detan.jpg",
                 "display_order": 21
             },
             {
@@ -272,7 +272,7 @@ def seed_database():
                 "description": "Nourishing cleansing, exfoliation, face acupressure massage, and revitalizing mask.",
                 "price": 1050.0,
                 "duration_mins": 45,
-                "image_url": "/static/images/services/men_facial.jpg",
+                "image_url": "/static/images/services/men_detan.jpg",
                 "display_order": 22
             },
             {
@@ -282,7 +282,7 @@ def seed_database():
                 "description": "Comprehensive fruit enzyme exfoliation, active hydration mask, and de-tan.",
                 "price": 800.0,
                 "duration_mins": 40,
-                "image_url": "/static/images/services/men_facial.jpg",
+                "image_url": "/static/images/services/men_detan.jpg",
                 "display_order": 23
             },
             {
@@ -292,7 +292,7 @@ def seed_database():
                 "description": "Luxury 24K gold foil and radiance cream ritual for celebratory glow and skin firmness.",
                 "price": 1500.0,
                 "duration_mins": 55,
-                "image_url": "/static/images/services/men_facial.jpg",
+                "image_url": "/static/images/services/men_detan.jpg",
                 "display_order": 24
             },
             {
@@ -302,7 +302,7 @@ def seed_database():
                 "description": "Premium multi-step luxury facial with deep glow serums, de-tan, and eye revival.",
                 "price": 2800.0,
                 "duration_mins": 75,
-                "image_url": "/static/images/services/men_facial.jpg",
+                "image_url": "/static/images/services/men_detan.jpg",
                 "display_order": 25
             },
             {
@@ -312,7 +312,7 @@ def seed_database():
                 "description": "Professional O3+ dermatological brightening and anti-pigmentation treatment.",
                 "price": 2500.0,
                 "duration_mins": 60,
-                "image_url": "/static/images/services/men_facial.jpg",
+                "image_url": "/static/images/services/men_detan.jpg",
                 "display_order": 26
             },
             {
@@ -322,7 +322,7 @@ def seed_database():
                 "description": "Melanin reduction, deep hydration, and skin brightening antioxidant treatment.",
                 "price": 2000.0,
                 "duration_mins": 55,
-                "image_url": "/static/images/services/men_facial.jpg",
+                "image_url": "/static/images/services/men_detan.jpg",
                 "display_order": 27
             },
             # --- Pedicure & Manicure (Men) ---
@@ -333,7 +333,7 @@ def seed_database():
                 "description": "Warm foot soak, heel buffing, nail trimming, cuticle care, and massage.",
                 "price": 650.0,
                 "duration_mins": 40,
-                "image_url": "/static/images/services/women_mani_pedi.jpg",
+                "image_url": "/static/images/services/men_pedicure.jpg",
                 "display_order": 28
             },
             {
@@ -343,7 +343,7 @@ def seed_database():
                 "description": "Exfoliating crystal scrub with jelly soak, deep heel calluses removal, and moisturizing pack.",
                 "price": 800.0,
                 "duration_mins": 50,
-                "image_url": "/static/images/services/women_mani_pedi.jpg",
+                "image_url": "/static/images/services/men_pedicure.jpg",
                 "display_order": 29
             },
             {
@@ -353,7 +353,7 @@ def seed_database():
                 "description": "Fresh citrus detox soak, dead skin scrubbing, anti-bacterial lemon massage.",
                 "price": 900.0,
                 "duration_mins": 50,
-                "image_url": "/static/images/services/women_mani_pedi.jpg",
+                "image_url": "/static/images/services/men_pedicure.jpg",
                 "display_order": 30
             },
             {
@@ -363,7 +363,7 @@ def seed_database():
                 "description": "Active tanning removal foot pack, scrub, nail grooming, and rich cream massage.",
                 "price": 700.0,
                 "duration_mins": 45,
-                "image_url": "/static/images/services/women_mani_pedi.jpg",
+                "image_url": "/static/images/services/men_pedicure.jpg",
                 "display_order": 31
             },
             {
@@ -373,7 +373,7 @@ def seed_database():
                 "description": "Hand soak, nail clipping, cuticle tidying, and hand moisturizing massage.",
                 "price": 350.0,
                 "duration_mins": 30,
-                "image_url": "/static/images/services/women_mani_pedi.jpg",
+                "image_url": "/static/images/services/men_manicure.jpg",
                 "display_order": 32
             },
             {
@@ -383,7 +383,7 @@ def seed_database():
                 "description": "Crystal gel exfoliation, cuticle cleaning, and nourishing hand cream.",
                 "price": 500.0,
                 "duration_mins": 40,
-                "image_url": "/static/images/services/women_mani_pedi.jpg",
+                "image_url": "/static/images/services/men_manicure.jpg",
                 "display_order": 33
             },
             {
@@ -393,7 +393,7 @@ def seed_database():
                 "description": "Refreshing citrus scrub and soak for clean, soft hands.",
                 "price": 650.0,
                 "duration_mins": 40,
-                "image_url": "/static/images/services/women_mani_pedi.jpg",
+                "image_url": "/static/images/services/men_manicure.jpg",
                 "display_order": 34
             },
             {
@@ -403,7 +403,7 @@ def seed_database():
                 "description": "De-tanning hand pack with gentle exfoliation and brightening finish.",
                 "price": 450.0,
                 "duration_mins": 35,
-                "image_url": "/static/images/services/women_mani_pedi.jpg",
+                "image_url": "/static/images/services/men_manicure.jpg",
                 "display_order": 35
             },
 
