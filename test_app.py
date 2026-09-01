@@ -190,7 +190,47 @@ class NatureSalonTestSuite(unittest.TestCase):
         self.assertEqual(res_enq.status_code, 200)
         self.assertTrue(res_enq.get_json()['success'])
 
-        print("[PASS] Admin CRUD operations (status update, service add, settings update, and API handlers) verified successfully.")
+        # 5. Test Admin Quick-Add WhatsApp Booking
+        quick_app_data = {
+            'customer_name': 'Vikram Reddy',
+            'phone': '9876543210',
+            'gender': 'Men',
+            'service_name': "Men's Hair Cut",
+            'appointment_date': '2026-09-06',
+            'appointment_time': '16:00',
+            'status': 'Pending',
+            'message': 'Direct WhatsApp Booking via +91 74837 37517'
+        }
+        res_quick = self.client.post('/admin/appointments/quick-add', data=quick_app_data, follow_redirects=True)
+        self.assertEqual(res_quick.status_code, 200)
+        quick_saved = Appointment.query.filter_by(customer_name='Vikram Reddy').first()
+        self.assertIsNotNone(quick_saved)
+        self.assertEqual(quick_saved.status, 'Pending')
+        db.session.delete(quick_saved)
+        db.session.commit()
+
+        # 6. Test WhatsApp Webhook Endpoint
+        webhook_data = {
+            'name': 'Anita Rao',
+            'phone': '917483737517',
+            'service': 'HYDRA Facial Machine Treatment',
+            'appointment_date': '2026-09-07',
+            'appointment_time': '11:00',
+            'message': 'Booking requested directly on WhatsApp chat'
+        }
+        res_hook = self.client.post('/api/whatsapp/webhook', json=webhook_data)
+        self.assertEqual(res_hook.status_code, 201)
+        hook_saved = Appointment.query.filter_by(customer_name='Anita Rao').first()
+        self.assertIsNotNone(hook_saved)
+        db.session.delete(hook_saved)
+        db.session.commit()
+
+        # 7. Test Admin Live Polling API
+        res_poll = self.client.get('/api/admin/appointments/poll')
+        self.assertEqual(res_poll.status_code, 200)
+        self.assertTrue(res_poll.get_json()['success'])
+
+        print("[PASS] Admin CRUD operations (status update, service add, settings update, WhatsApp quick-add, Webhook, and live polling) verified successfully.")
 
 if __name__ == '__main__':
     unittest.main()

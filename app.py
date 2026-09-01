@@ -15,6 +15,10 @@ from utils import (
     build_whatsapp_booking_url, 
     build_whatsapp_general_url, 
     build_whatsapp_enquiry_url, 
+    build_whatsapp_direct_chat_url,
+    build_whatsapp_admin_confirmation_url,
+    build_whatsapp_admin_reminder_url,
+    build_whatsapp_admin_review_url,
     clean_phone_number,
     sanitize_text,
     sanitize_email
@@ -44,13 +48,35 @@ def create_app(config_name=None):
     login_manager = LoginManager()
     login_manager.login_view = 'admin_login'
     login_manager.login_message = 'Please sign in to access the Salon Admin Dashboard.'
-    login_manager.login_message_category = 'warning'
+    login_manager.login_message_category = 'info'
     login_manager.init_app(app)
     
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.get(User, int(user_id))
     
+    # Jinja Custom Filters
+    @app.template_filter('datetime_format')
+    def datetime_format_filter(value, format='%d %b %Y, %I:%M %p'):
+        if value is None:
+            return ""
+        if isinstance(value, str):
+            try:
+                value = datetime.fromisoformat(value)
+            except Exception:
+                return value
+        return value.strftime(format)
+
+    @app.template_filter('currency')
+    def currency_filter(amount):
+        try:
+            val = float(amount)
+            if val.is_integer():
+                return f"₹{int(val)}"
+            return f"₹{val:.2f}"
+        except Exception:
+            return f"₹{amount}"
+
     # HTTP Security Headers Middleware (OWASP Top 10 Hardening)
     @app.after_request
     def apply_security_headers(response):
@@ -105,7 +131,11 @@ def create_app(config_name=None):
             'nav_services': nav_services,
             'current_year': datetime.now().year,
             'whatsapp_chat_url': whatsapp_url,
-            'salon_clean_phone': clean_salon_phone
+            'salon_clean_phone': clean_salon_phone,
+            'build_whatsapp_direct_chat_url': build_whatsapp_direct_chat_url,
+            'build_whatsapp_admin_confirmation_url': build_whatsapp_admin_confirmation_url,
+            'build_whatsapp_admin_reminder_url': build_whatsapp_admin_reminder_url,
+            'build_whatsapp_admin_review_url': build_whatsapp_admin_review_url
         }
 
 
@@ -535,12 +565,50 @@ def create_app(config_name=None):
             )
             
         appointments = query.order_by(Appointment.created_at.desc()).all()
+        services = Service.query.order_by(Service.gender_target.asc(), Service.name.asc()).all()
         return render_template(
             'admin/appointments.html',
             appointments=appointments,
+            services=services,
             active_status=status_filter,
             search_query=search_query
         )
+
+    @app.route('/admin/appointments/quick-add', methods=['POST'])
+    @login_required
+    def admin_quick_add_appointment():
+        """Log a WhatsApp or direct phone appointment directly from admin portal."""
+        name = sanitize_text(request.form.get('customer_name', ''), max_length=100)
+        phone = sanitize_text(request.form.get('phone', ''), max_length=25)
+        email = sanitize_email(request.form.get('email', ''))
+        gender = sanitize_text(request.form.get('gender', 'Not Specified'), max_length=30)
+        service_name = sanitize_text(request.form.get('service_name', 'General Service'), max_length=120)
+        app_date = sanitize_text(request.form.get('appointment_date', ''), max_length=20)
+        app_time = sanitize_text(request.form.get('appointment_time', ''), max_length=20)
+        status = sanitize_text(request.form.get('status', 'Pending'), max_length=20)
+        message = sanitize_text(request.form.get('message', ''), max_length=1000)
+        admin_notes = sanitize_text(request.form.get('admin_notes', 'Logged via WhatsApp/Phone Direct'), max_length=500)
+
+        if not name or not phone or not app_date or not app_time:
+            flash('Customer Name, Phone, Date, and Time are required.', 'error')
+            return redirect(url_for('admin_appointments'))
+
+        appointment = Appointment(
+            customer_name=name,
+            phone=phone,
+            email=email,
+            gender=gender,
+            service_name=service_name,
+            appointment_date=app_date,
+            appointment_time=app_time,
+            status=status if status in ['Pending', 'Confirmed', 'Completed', 'Cancelled'] else 'Pending',
+            message=message,
+            admin_notes=admin_notes
+        )
+        db.session.add(appointment)
+        db.session.commit()
+        flash(f'New appointment for {name} (#{appointment.id}) has been recorded for review.', 'success')
+        return redirect(url_for('admin_appointments'))
 
     @app.route('/admin/appointments/status/<int:appointment_id>', methods=['POST'])
     @login_required
@@ -573,6 +641,64 @@ def create_app(config_name=None):
             db.session.commit()
             flash(f'Appointment #{appointment_id} deleted.', 'success')
         return redirect(url_for('admin_appointments'))
+
+    @app.route('/api/admin/appointments/poll')
+    @login_required
+    def admin_appointments_poll():
+        """Live polling endpoint to check for incoming appointments in real-time."""
+        pending_count = Appointment.query.filter_by(status='Pending').count()
+        latest = Appointment.query.order_by(Appointment.id.desc()).first()
+        latest_id = latest.id if latest else 0
+        return jsonify({
+            'success': True,
+            'pending_count': pending_count,
+            'latest_id': latest_id
+        })
+
+    @app.route('/api/whatsapp/webhook', methods=['GET', 'POST'])
+    def api_whatsapp_webhook():
+        """
+        Incoming webhook endpoint for WhatsApp integrations (Meta Cloud API, Twilio, or Zapier/n8n).
+        Instantly logs incoming appointment messages directly into the website for admin review.
+        """
+        # GET: Webhook verification handshake (Meta Graph API / Cloud API standard)
+        if request.method == 'GET':
+            mode = request.args.get('hub.mode')
+            token = request.args.get('hub.verify_token')
+            challenge = request.args.get('hub.challenge')
+            verify_secret = os.environ.get('WHATSAPP_VERIFY_TOKEN', 'nature_unisex_secret_2026')
+            
+            if mode == 'subscribe' and token == verify_secret:
+                return challenge or "OK", 200
+            return "Forbidden", 403
+
+        # POST: Process incoming WhatsApp message payload
+        try:
+            payload = request.get_json(silent=True) or request.form.to_dict() or {}
+            customer_name = sanitize_text(payload.get('name') or payload.get('customer_name') or payload.get('From') or 'WhatsApp Guest', max_length=100)
+            phone = sanitize_text(payload.get('phone') or payload.get('WaId') or payload.get('From') or '', max_length=30)
+            service_name = sanitize_text(payload.get('service') or payload.get('service_name') or 'WhatsApp Booking Request', max_length=120)
+            app_date = sanitize_text(payload.get('date') or payload.get('appointment_date') or datetime.now().strftime('%Y-%m-%d'), max_length=20)
+            app_time = sanitize_text(payload.get('time') or payload.get('appointment_time') or '09:00', max_length=20)
+            message = sanitize_text(payload.get('message') or payload.get('Body') or str(payload), max_length=1000)
+            
+            if phone:
+                appointment = Appointment(
+                    customer_name=customer_name,
+                    phone=phone,
+                    service_name=service_name,
+                    appointment_date=app_date,
+                    appointment_time=app_time,
+                    message=message,
+                    status='Pending',
+                    admin_notes='Received via WhatsApp Webhook'
+                )
+                db.session.add(appointment)
+                db.session.commit()
+                return jsonify({'success': True, 'appointment_id': appointment.id}), 201
+            return jsonify({'success': True, 'message': 'Webhook received'}), 200
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 400
 
     @app.route('/admin/services')
     @login_required

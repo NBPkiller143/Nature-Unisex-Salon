@@ -155,24 +155,81 @@ def build_whatsapp_general_url(whatsapp_number, message="Hello Nature Unisex Sal
     return f"https://api.whatsapp.com/send?phone={clean_number}&text={encoded_message}"
 
 def build_whatsapp_enquiry_url(whatsapp_number, name, phone, subject="General Salon Inquiry", message=""):
-    """
-    Generates a pre-filled WhatsApp click-to-chat URL for customer enquiries.
-    """
+    """Generates pre-filled WhatsApp click-to-chat URL for customer enquiries."""
     clean_number = clean_phone_number(whatsapp_number)
-    
     lines = [
         "👋 Hello Nature Unisex Salon,",
         "I would like to submit an enquiry:",
         f"👤 *Name:* {name}",
         f"📞 *Phone:* {phone}",
         f"📌 *Subject:* {subject}",
-        f"💬 *Message:* {message}"
+        f"💬 *Message:* {message}",
+        "\nPlease let me know your recommendations. Thank you!"
     ]
-    lines.append("\nPlease let me know your recommendations. Thank you!")
-    
     message_text = "\n".join(lines)
     encoded_message = urllib.parse.quote(message_text)
-    
+    return f"https://api.whatsapp.com/send?phone={clean_number}&text={encoded_message}"
+
+def build_whatsapp_direct_chat_url(phone_number, custom_text=""):
+    """Generates direct chat URL to a customer's WhatsApp."""
+    clean_number = clean_phone_number(phone_number)
+    if custom_text:
+        encoded_message = urllib.parse.quote(custom_text)
+        return f"https://api.whatsapp.com/send?phone={clean_number}&text={encoded_message}"
+    return f"https://api.whatsapp.com/send?phone={clean_number}"
+
+def build_whatsapp_admin_confirmation_url(customer_phone, customer_name, service_name, appointment_date, appointment_time, salon_address="12, Anjaneya Temple St, Austin Town / Neelasandra, Bengaluru"):
+    """
+    Generates admin 1-click confirmation message to send to customer on WhatsApp.
+    """
+    clean_number = clean_phone_number(customer_phone)
+    lines = [
+        f"👋 Hello {customer_name}! 🌿",
+        "Your appointment at *Nature Unisex Salon* has been *CONFIRMED*.",
+        "",
+        f"✂️ *Service:* {service_name}",
+        f"📅 *Date:* {appointment_date}",
+        f"⏰ *Time:* {appointment_time}",
+        f"📍 *Location:* {salon_address}",
+        "📞 *Contact:* +91 74837 37517",
+        "",
+        "We look forward to welcoming you! Please reply here if you need to modify your time."
+    ]
+    message_text = "\n".join(lines)
+    encoded_message = urllib.parse.quote(message_text)
+    return f"https://api.whatsapp.com/send?phone={clean_number}&text={encoded_message}"
+
+def build_whatsapp_admin_reminder_url(customer_phone, customer_name, service_name, appointment_date, appointment_time):
+    """Generates appointment reminder WhatsApp URL."""
+    clean_number = clean_phone_number(customer_phone)
+    lines = [
+        f"👋 Hello {customer_name}! 🌿",
+        "Gentle reminder regarding your upcoming appointment at *Nature Unisex Salon*:",
+        f"✂️ *Service:* {service_name}",
+        f"📅 *Date:* {appointment_date}",
+        f"⏰ *Time:* {appointment_time}",
+        "📍 12, Anjaneya Temple Street, Austin Town, Neelasandra, Bengaluru.",
+        "\nSee you soon!"
+    ]
+    message_text = "\n".join(lines)
+    encoded_message = urllib.parse.quote(message_text)
+    return f"https://api.whatsapp.com/send?phone={clean_number}&text={encoded_message}"
+
+def build_whatsapp_admin_review_url(customer_phone, customer_name, review_url="https://nature-unisex-salon.onrender.com/reviews"):
+    """Generates review request WhatsApp URL after service completion."""
+    clean_number = clean_phone_number(customer_phone)
+    lines = [
+        f"👋 Hello {customer_name}! ✨",
+        "Thank you for visiting *Nature Unisex Salon* today!",
+        "We hope you loved your styling & care experience.",
+        "",
+        "Could you take a quick 30 seconds to share your feedback?",
+        f"⭐ *Leave Review:* {review_url}",
+        "",
+        "Have a wonderful day ahead! 🌿"
+    ]
+    message_text = "\n".join(lines)
+    encoded_message = urllib.parse.quote(message_text)
     return f"https://api.whatsapp.com/send?phone={clean_number}&text={encoded_message}"
 
 

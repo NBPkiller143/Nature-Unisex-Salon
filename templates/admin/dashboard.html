@@ -133,11 +133,14 @@
             </td>
             <td>
               <div class="action-btn-group">
-                <button type="button" class="btn-action" onclick="openStatusModal({{ app.id }}, '{{ app.customer_name }}', '{{ app.status }}', '{{ app.admin_notes or '' }}')">
+                <button type="button" class="btn-action" onclick="openStatusModal({{ app.id }}, '{{ app.customer_name|escape }}', '{{ app.status }}', '{{ (app.admin_notes or '')|escape }}')">
                   <i class="fa-solid fa-pen-to-square"></i> Status
                 </button>
-                <a href="https://api.whatsapp.com/send?phone={{ app.phone|clean_wa_phone }}" target="_blank" rel="noopener" class="btn-action" title="Chat on WhatsApp" style="color: #16a34a;">
-                  <i class="fa-brands fa-whatsapp"></i>
+                <a href="{{ build_whatsapp_admin_confirmation_url(app.phone, app.customer_name, app.service_name, app.appointment_date, app.appointment_time, settings.address if settings else '12 Anjaneya Temple St, Bengaluru') }}" target="_blank" rel="noopener" class="btn-action" title="Send WhatsApp Confirmation" style="color: #16a34a; background: rgba(22, 163, 74, 0.1);">
+                  <i class="fa-brands fa-whatsapp"></i> Confirm
+                </a>
+                <a href="{{ build_whatsapp_direct_chat_url(app.phone) }}" target="_blank" rel="noopener" class="btn-action" title="Chat on WhatsApp" style="color: #25d366;">
+                  <i class="fa-solid fa-comment-dots"></i>
                 </a>
               </div>
             </td>
