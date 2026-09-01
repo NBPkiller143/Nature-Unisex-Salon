@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 70" width="100%" height="100%">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dfc28b" />
+      <stop offset="50%" stop-color="#c5a059" />
+      <stop offset="100%" stop-color="#9a752e" />
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f9e6b8" />
+      <stop offset="100%" stop-color="#c5a059" />
+    </linearGradient>
+  </defs>
+
+  <!-- Left Icon Lockup (scale to 60x60) -->
+  <g transform="translate(5, 5) scale(0.6)">
+    <g transform="translate(0, -2)">
+      <path d="M50 14 C57 5 70 9 68 23 C64 16 56 16 50 14 Z" fill="url(#leafGrad)" />
+      <path d="M45 16 C35 8 25 15 29 27 C33 20 41 19 45 16 Z" fill="url(#leafGrad)" />
+      <path d="M54 23 C67 17 79 25 73 38 C69 28 60 27 54 23 Z" fill="url(#leafGrad)" />
+      
+      <path d="M33 29 C21 39 19 57 28 71 C33 79 43 83 52 85 C43 82 35 75 34 64 C33 52 41 40 48 31 C41 29 36 29 33 29 Z" fill="url(#goldGrad)" />
+      
+      <path d="M48 31 C56 36 61 45 59 54 C58 59 55 63 59 67 C62 70 59 73 55 75 C51 77 45 76 41 73 C47 73 51 71 52 67 C48 65 49 58 51 53 C53 47 50 39 48 31 Z" fill="url(#goldGrad)" />
+      
+      <path d="M43 26 C47 34 45 44 37 50 C39 42 43 34 43 26 Z" fill="url(#goldGrad)" opacity="0.95" />
+    </g>
+    
+    <rect x="20" y="84" width="60" height="14" rx="7" fill="url(#goldGrad)" />
+    <text x="50" y="94.5" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="8.5" font-weight="800" fill="#0f2e21" text-anchor="middle" letter-spacing="2">UNISEX</text>
+  </g>
+
+  <!-- Typography Lockup -->
+  <text x="75" y="36" font-family="'Cormorant Garamond', Georgia, serif" font-size="25" font-weight="700" fill="#0f2e21" letter-spacing="1">NATURE UNISEX SALON</text>
+  <text x="76" y="52" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" font-weight="700" fill="#a8813a" letter-spacing="3.5">STYLE · CARE · CONFIDENCE</text>
+</svg>

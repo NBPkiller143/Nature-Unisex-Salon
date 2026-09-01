@@ -13,7 +13,7 @@
   <meta property="og:image" content="{{ url_for('static', filename='images/hero_salon.jpg') }}">
   
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/logo-icon.svg') }}">
   
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -52,9 +52,12 @@
   <!-- Main Navigation -->
   <header class="navbar">
     <div class="container navbar-container">
-      <a href="{{ url_for('index') }}" class="brand-logo">
-        <span class="brand-title">{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</span>
-        <span class="brand-subtitle">{{ settings.tagline if settings else 'Style. Care. Confidence.' }}</span>
+      <a href="{{ url_for('index') }}" class="brand-logo" aria-label="Nature Unisex Salon Home">
+        <img src="{{ url_for('static', filename='images/logo-icon.svg') }}" alt="Nature Unisex Salon Logo" class="brand-logo-img">
+        <div class="brand-text">
+          <span class="brand-title">{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</span>
+          <span class="brand-subtitle">{{ settings.tagline if settings else 'Style. Care. Confidence.' }}</span>
+        </div>
       </a>
 
       <!-- Navigation Drawer Backdrop -->
@@ -64,6 +67,7 @@
         <!-- Mobile Drawer Header with Close Button -->
         <div class="nav-drawer-header">
           <div class="drawer-brand">
+            <img src="{{ url_for('static', filename='images/logo-icon.svg') }}" alt="Logo" class="drawer-logo-img">
             <span class="drawer-brand-title">{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</span>
           </div>
           <button type="button" class="drawer-close-btn" id="drawerCloseBtn" aria-label="Close Navigation Menu">
@@ -133,8 +137,11 @@
       <div class="footer-grid">
         <div class="footer-col">
           <div class="brand-logo" style="margin-bottom: 1.2rem;">
-            <span class="brand-title" style="color: #ffffff;">{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</span>
-            <span class="brand-subtitle">{{ settings.tagline if settings else 'Style. Care. Confidence.' }}</span>
+            <img src="{{ url_for('static', filename='images/logo-icon.svg') }}" alt="Logo" class="brand-logo-img" style="filter: brightness(1.1);">
+            <div class="brand-text">
+              <span class="brand-title" style="color: #ffffff;">{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</span>
+              <span class="brand-subtitle">{{ settings.tagline if settings else 'Style. Care. Confidence.' }}</span>
+            </div>
           </div>
           <p>{{ settings.about_text[:160] if settings else 'A premium sanctuary dedicated to organic hair artistry, rejuvenating skincare, and precision grooming for men and women.' }}...</p>
           <div class="footer-socials">
