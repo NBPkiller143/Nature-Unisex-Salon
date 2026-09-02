@@ -55,11 +55,9 @@
       </div>
       <h3 style="margin-bottom: 0.6rem;">Follow Our Daily Transformations</h3>
       <p style="max-width: 600px; margin: 0 auto 1.5rem auto;">Tag <strong>#NatureUnisexSalon</strong> on Instagram to be featured on our official showcase page.</p>
-      {% if settings and settings.instagram_url %}
-        <a href="{{ settings.instagram_url }}" target="_blank" rel="noopener" class="btn btn-primary">
-          <i class="fa-brands fa-instagram"></i> Visit @nature_unisex_salon72 on Instagram
-        </a>
-      {% endif %}
+      <a href="{{ settings.instagram_url if (settings and settings.instagram_url) else 'https://www.instagram.com/nature_unisex_salon72/' }}" target="_blank" rel="noopener" class="btn btn-primary">
+        <i class="fa-brands fa-instagram"></i> Visit @nature_unisex_salon72 on Instagram
+      </a>
     </div>
 
   </div>

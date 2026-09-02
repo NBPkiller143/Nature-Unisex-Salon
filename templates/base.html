@@ -147,9 +147,7 @@
           </div>
           <p>{{ settings.about_text[:160] if settings else 'A premium sanctuary dedicated to organic hair artistry, rejuvenating skincare, and precision grooming for men and women.' }}...</p>
           <div class="footer-socials">
-            {% if settings and settings.instagram_url %}
-              <a href="{{ settings.instagram_url }}" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-            {% endif %}
+            <a href="{{ settings.instagram_url if (settings and settings.instagram_url) else 'https://www.instagram.com/nature_unisex_salon72/' }}" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
             <a href="{{ whatsapp_chat_url }}" target="_blank" rel="noopener" class="social-icon" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
           </div>
         </div>

@@ -80,6 +80,10 @@ def create_app(config_name=None):
     # HTTP Security Headers Middleware (OWASP Top 10 Hardening)
     @app.after_request
     def apply_security_headers(response):
+        if response.content_type and 'text/html' in response.content_type:
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
         response.headers['X-Frame-Options'] = 'SAMEORIGIN'
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['X-XSS-Protection'] = '1; mode=block'
