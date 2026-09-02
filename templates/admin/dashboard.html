@@ -180,7 +180,7 @@
       </thead>
       <tbody>
         {% for inq in recent_inquiries %}
-          <tr style="{% if not inq.is_read %}font-weight: 600; background: #fafafa;{% endif %}">
+          <tr class="{% if not inq.is_read %}unread-row{% endif %}">
             <td>{{ inq.name }}</td>
             <td>
               <div>{{ inq.phone }}</div>

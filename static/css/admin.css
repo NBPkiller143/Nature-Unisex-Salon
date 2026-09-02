@@ -1106,4 +1106,45 @@ body {
   background: rgba(255, 255, 255, 0.25);
 }
 
+/* Visibility Utility */
+.is-hidden {
+  display: none !important;
+}
+
+/* Flash Messages */
+.admin-flash-alert {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-flash-alert.admin-flash-success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.admin-flash-alert.admin-flash-error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.admin-flash-alert.admin-flash-info {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+/* Unread Table Rows */
+.unread-row {
+  background: #fdfdfd;
+  font-weight: 600;
+}
+
 

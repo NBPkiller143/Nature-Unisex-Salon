@@ -160,10 +160,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateBadgeCounts(count) {
     if (notificationCountBadge) {
       notificationCountBadge.textContent = count;
+      notificationCountBadge.classList.toggle('is-hidden', count === 0);
       notificationCountBadge.style.display = count > 0 ? 'flex' : 'none';
     }
     if (sidebarAppointmentBadge) {
       sidebarAppointmentBadge.textContent = count;
+      sidebarAppointmentBadge.classList.toggle('is-hidden', count === 0);
       sidebarAppointmentBadge.style.display = count > 0 ? 'inline-block' : 'none';
     }
     if (notificationsHeaderCount) {
