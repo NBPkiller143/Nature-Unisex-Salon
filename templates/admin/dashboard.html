@@ -133,7 +133,7 @@
             </td>
             <td>
               <div class="action-btn-group">
-                <button type="button" class="btn-action" onclick="openStatusModal({{ app.id }}, '{{ app.customer_name|escape }}', '{{ app.status }}', '{{ (app.admin_notes or '')|escape }}')">
+                <button type="button" class="btn-action status-edit-trigger" data-id="{{ app.id }}" data-name="{{ app.customer_name }}" data-status="{{ app.status }}" data-notes="{{ app.admin_notes or '' }}">
                   <i class="fa-solid fa-pen-to-square"></i> Status
                 </button>
                 <a href="{{ build_whatsapp_admin_confirmation_url(app.phone, app.customer_name, app.service_name, app.appointment_date, app.appointment_time, settings.address if settings else '12 Anjaneya Temple St, Bengaluru') }}" target="_blank" rel="noopener" class="btn-action" title="Send WhatsApp Confirmation" style="color: #16a34a; background: rgba(22, 163, 74, 0.1);">

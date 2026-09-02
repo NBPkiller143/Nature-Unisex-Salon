@@ -97,6 +97,20 @@ document.addEventListener('DOMContentLoaded', () => {
     openModal('statusModal');
   };
 
+  // Delegated click listener for status edit triggers (works on both dashboard and appointments)
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('.status-edit-trigger');
+    if (trigger) {
+      const id = trigger.getAttribute('data-id');
+      const name = trigger.getAttribute('data-name');
+      const status = trigger.getAttribute('data-status');
+      const notes = trigger.getAttribute('data-notes');
+      if (typeof window.openStatusModal === 'function') {
+        window.openStatusModal(id, name, status, notes);
+      }
+    }
+  });
+
   // 4. Service Edit Modal Helper
   window.openEditServiceModal = function(service) {
     const form = document.getElementById('editServiceForm');
