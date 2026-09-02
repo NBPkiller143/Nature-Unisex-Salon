@@ -157,7 +157,7 @@ class NatureSalonTestSuite(unittest.TestCase):
             'google_maps_url': 'https://www.google.com/maps/place/Nature+unisex+salon/@12.9570761,77.6192442,15z/data=!4m6!3m5!1s0x3bae156290e25a91:0x923594a7d37cb230!8m2!3d12.9565087!4d77.6196044!16s%2Fg%2F11z1zkml55',
             'google_maps_embed': 'https://maps.google.com/maps?q=12.9565087,77.6196044+(Nature%20Unisex%20Salon)&t=&z=16&ie=UTF8&iwloc=B&output=embed',
             'instagram_url': 'https://www.instagram.com/nature_unisex_salon72',
-            'facebook_url': 'https://facebook.com/natureunisexsalon',
+            'facebook_url': '',
             'hero_headline': 'Style. Care. Confidence.',
             'hero_subtext': 'Discover bespoke hair artistry, rejuvenating skincare, and precision grooming crafted for both men and women in an atmosphere of organic calm and modern elegance.',
             'about_text': 'Nature Unisex Salon was founded on the philosophy that true beauty stems from mindful care, natural wellness, and artisan technique. We provide a hygienic, welcoming sanctuary where top-tier stylists tailor every cut, colour, and skin ritual to your unique identity.'
