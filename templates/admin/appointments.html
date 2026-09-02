@@ -91,7 +91,12 @@
         <tbody>
           {% for app in appointments %}
             <tr>
-              <td><strong>#{{ app.id }}</strong></td>
+              <td>
+                <strong>#{{ app.id }}</strong>
+                {% if not app.is_read %}
+                  <span class="badge" style="background: #ef4444; color: #fff; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-left: 4px; font-weight: 700;">NEW</span>
+                {% endif %}
+              </td>
               <td>
                 <div style="font-weight: 700; color: var(--admin-primary); font-size: 0.95rem;">{{ app.customer_name }}</div>
                 <div style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-user"></i> {{ app.gender or 'Not Specified' }}</div>

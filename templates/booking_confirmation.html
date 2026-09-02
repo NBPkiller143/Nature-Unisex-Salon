@@ -51,14 +51,35 @@
         </div>
       </div>
 
+      <!-- WhatsApp Auto-Redirect Alert -->
+      <div style="background: #ecfdf5; border: 1.5px solid #10b981; border-radius: var(--radius-md); padding: 1.2rem 1.5rem; max-width: 520px; margin: 0 auto 2rem auto; display: flex; align-items: center; gap: 0.85rem; text-align: left;">
+        <i class="fa-solid fa-circle-notch fa-spin text-gold" style="font-size: 1.4rem; color: #10b981; flex-shrink: 0;"></i>
+        <div>
+          <h4 style="margin: 0; font-size: 0.98rem; color: #065f46; font-weight: 700;">Redirecting to WhatsApp...</h4>
+          <p style="margin: 0.2rem 0 0 0; font-size: 0.82rem; color: #047857;">Connecting you directly with Nature Unisex Salon reception to send your pre-filled appointment details.</p>
+        </div>
+      </div>
+
       <!-- WhatsApp Quick Confirmation Button -->
       <div style="background: rgba(37, 211, 102, 0.08); border: 1px dashed #25d366; border-radius: var(--radius-md); padding: 1.5rem; max-width: 520px; margin: 0 auto 2.5rem auto;">
-        <h4 style="font-family: var(--font-body); font-size: 1rem; color: #166534; margin-bottom: 0.4rem;">Want faster priority confirmation?</h4>
-        <p style="font-size: 0.85rem; color: #15803d; margin-bottom: 1rem;">Click below to send your pre-filled appointment details directly to our salon reception on WhatsApp.</p>
-        <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="btn btn-gold" style="background: #25d366; border-color: #25d366; color: #ffffff; width: 100%; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);">
-          <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Continue on WhatsApp
+        <h4 style="font-family: var(--font-body); font-size: 1rem; color: #166534; margin-bottom: 0.4rem;">Send booking directly on WhatsApp</h4>
+        <p style="font-size: 0.85rem; color: #15803d; margin-bottom: 1rem;">Click below if you are not automatically redirected within a few seconds.</p>
+        <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="btn btn-gold" id="whatsappRedirectBtn" style="background: #25d366; border-color: #25d366; color: #ffffff; width: 100%; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35); display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1.05rem;">
+          <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i> Continue on WhatsApp
         </a>
       </div>
+
+      <meta http-equiv="refresh" content="1; url={{ whatsapp_url }}">
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var waUrl = "{{ whatsapp_url|safe }}";
+          if (waUrl) {
+            setTimeout(function() {
+              window.location.href = waUrl;
+            }, 600);
+          }
+        });
+      </script>
 
       <!-- Secondary Links -->
       <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">

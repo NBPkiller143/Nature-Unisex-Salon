@@ -130,6 +130,14 @@ def create_app(config_name=None):
         whatsapp_url = build_whatsapp_general_url(salon_wa)
         clean_salon_phone = clean_phone_number(settings.phone if settings else '917483737517')
         
+        unread_appointments_count = 0
+        unread_appointments_list = []
+        try:
+            unread_appointments_count = Appointment.query.filter_by(is_read=False).count()
+            unread_appointments_list = Appointment.query.filter_by(is_read=False).order_by(Appointment.created_at.desc()).limit(10).all()
+        except Exception:
+            pass
+
         return {
             'settings': settings,
             'nav_services': nav_services,
@@ -139,7 +147,9 @@ def create_app(config_name=None):
             'build_whatsapp_direct_chat_url': build_whatsapp_direct_chat_url,
             'build_whatsapp_admin_confirmation_url': build_whatsapp_admin_confirmation_url,
             'build_whatsapp_admin_reminder_url': build_whatsapp_admin_reminder_url,
-            'build_whatsapp_admin_review_url': build_whatsapp_admin_review_url
+            'build_whatsapp_admin_review_url': build_whatsapp_admin_review_url,
+            'unread_appointments_count': unread_appointments_count,
+            'unread_appointments_list': unread_appointments_list
         }
 
 
@@ -376,7 +386,8 @@ def create_app(config_name=None):
                 appointment_date=app_date,
                 appointment_time=app_time,
                 message=notes,
-                status='Pending'
+                status='Pending',
+                is_read=False
             )
             db.session.add(appointment)
             db.session.commit()
@@ -441,7 +452,8 @@ def create_app(config_name=None):
             appointment_date=app_date,
             appointment_time=app_time,
             message=notes,
-            status='Pending'
+            status='Pending',
+            is_read=False
         )
         db.session.add(appointment)
         db.session.commit()
@@ -649,14 +661,58 @@ def create_app(config_name=None):
     @app.route('/api/admin/appointments/poll')
     @login_required
     def admin_appointments_poll():
-        """Live polling endpoint to check for incoming appointments in real-time."""
+        """Live polling endpoint to check for incoming appointments and unread notifications in real-time."""
         pending_count = Appointment.query.filter_by(status='Pending').count()
+        unread_query = Appointment.query.filter_by(is_read=False).order_by(Appointment.created_at.desc())
+        unread_count = unread_query.count()
+        unread_items = unread_query.limit(10).all()
         latest = Appointment.query.order_by(Appointment.id.desc()).first()
         latest_id = latest.id if latest else 0
+        
+        items_data = []
+        for a in unread_items:
+            items_data.append({
+                'id': a.id,
+                'customer_name': a.customer_name,
+                'phone': a.phone,
+                'service_name': a.service_name,
+                'appointment_date': a.appointment_date,
+                'appointment_time': a.appointment_time,
+                'created_at': a.created_at.strftime('%I:%M %p, %d %b') if a.created_at else ''
+            })
+            
         return jsonify({
             'success': True,
             'pending_count': pending_count,
-            'latest_id': latest_id
+            'unread_count': unread_count,
+            'latest_id': latest_id,
+            'unread_appointments': items_data
+        })
+
+    @app.route('/api/admin/appointments/<int:appointment_id>/clear-notification', methods=['POST'])
+    @login_required
+    def admin_clear_single_notification(appointment_id):
+        """Mark a single appointment notification as cleared/read."""
+        appointment = db.session.get(Appointment, appointment_id)
+        if appointment:
+            appointment.is_read = True
+            db.session.commit()
+        unread_count = Appointment.query.filter_by(is_read=False).count()
+        return jsonify({
+            'success': True,
+            'unread_count': unread_count,
+            'cleared_id': appointment_id
+        })
+
+    @app.route('/api/admin/appointments/clear-all-notifications', methods=['POST'])
+    @login_required
+    def admin_clear_all_notifications():
+        """Clear all pending appointment notifications."""
+        Appointment.query.filter_by(is_read=False).update({'is_read': True})
+        db.session.commit()
+        return jsonify({
+            'success': True,
+            'unread_count': 0
         })
 
     @app.route('/api/whatsapp/webhook', methods=['GET', 'POST'])
@@ -1030,12 +1086,27 @@ def create_app(config_name=None):
 
     return app
 
+def ensure_db_schema_upgrades():
+    """Ensure newly added columns exist in existing database schemas."""
+    try:
+        from sqlalchemy import inspect, text
+        inspector = inspect(db.engine)
+        if 'appointments' in inspector.get_table_names():
+            columns = [c['name'] for c in inspector.get_columns('appointments')]
+            if 'is_read' not in columns:
+                with db.engine.connect() as conn:
+                    conn.execute(text("ALTER TABLE appointments ADD COLUMN is_read BOOLEAN DEFAULT 0;"))
+                    conn.commit()
+    except Exception as e:
+        print(f"[!] Schema check notice: {e}")
+
 # Create application instance
 app = create_app()
 
 # Auto-initialize and seed DB when running directly or in staging/prod
 with app.app_context():
     db.create_all()
+    ensure_db_schema_upgrades()
     seed_database()
 
 if __name__ == '__main__':

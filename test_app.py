@@ -225,12 +225,29 @@ class NatureSalonTestSuite(unittest.TestCase):
         db.session.delete(hook_saved)
         db.session.commit()
 
-        # 7. Test Admin Live Polling API
+        # 7. Test Admin Live Polling & Notification Clear APIs
         res_poll = self.client.get('/api/admin/appointments/poll')
         self.assertEqual(res_poll.status_code, 200)
-        self.assertTrue(res_poll.get_json()['success'])
+        poll_json = res_poll.get_json()
+        self.assertTrue(poll_json['success'])
+        self.assertIn('unread_count', poll_json)
+        self.assertIn('unread_appointments', poll_json)
 
-        print("[PASS] Admin CRUD operations (status update, service add, settings update, WhatsApp quick-add, Webhook, and live polling) verified successfully.")
+        # 8. Test Clear Single Notification API
+        first_unread = Appointment.query.filter_by(is_read=False).first()
+        if first_unread:
+            res_clear_one = self.client.post(f'/api/admin/appointments/{first_unread.id}/clear-notification')
+            self.assertEqual(res_clear_one.status_code, 200)
+            self.assertTrue(res_clear_one.get_json()['success'])
+
+        # 9. Test Clear All Notifications API
+        res_clear_all = self.client.post('/api/admin/appointments/clear-all-notifications')
+        self.assertEqual(res_clear_all.status_code, 200)
+        clear_json = res_clear_all.get_json()
+        self.assertTrue(clear_json['success'])
+        self.assertEqual(clear_json['unread_count'], 0)
+
+        print("[PASS] Admin CRUD operations (status update, service add, settings update, WhatsApp quick-add, Webhook, live polling, and notification clearing) verified successfully.")
 
 if __name__ == '__main__':
     unittest.main()

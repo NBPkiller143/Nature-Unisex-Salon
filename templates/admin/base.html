@@ -37,6 +37,7 @@
       <a href="{{ url_for('admin_appointments') }}" class="nav-item-link {% if request.endpoint == 'admin_appointments' %}active{% endif %}">
         <i class="fa-solid fa-calendar-check"></i>
         <span>Appointments</span>
+        <span class="sidebar-badge" id="sidebarAppointmentBadge" style="{% if not unread_appointments_count %}display:none;{% endif %}">{{ unread_appointments_count }}</span>
       </a>
       <a href="{{ url_for('admin_services') }}" class="nav-item-link {% if request.endpoint == 'admin_services' %}active{% endif %}">
         <i class="fa-solid fa-scissors"></i>
@@ -94,6 +95,69 @@
       </div>
 
       <div class="topbar-actions">
+        <!-- Live Notification Bell Dropdown -->
+        <div class="topbar-notifications" id="adminNotificationsDropdown">
+          <button type="button" class="btn-notification-bell" id="notificationBellBtn" aria-label="Appointment Notifications" title="Appointment Notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notification-badge" id="notificationCountBadge" style="{% if not unread_appointments_count %}display:none;{% endif %}">{{ unread_appointments_count }}</span>
+          </button>
+          
+          <div class="notifications-dropdown" id="notificationsDropdown">
+            <div class="notifications-dropdown-header">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-bell text-gold"></i>
+                <h4 style="margin: 0; font-size: 0.92rem; font-weight: 700; color: var(--admin-primary);">New Appointments</h4>
+                <span class="notifications-counter-pill" id="notificationsHeaderCount">{{ unread_appointments_count }}</span>
+              </div>
+              <button type="button" class="btn-clear-all-notifs" id="clearAllNotificationsBtn" title="Clear all appointment notifications">
+                <i class="fa-solid fa-check-double"></i> Clear All
+              </button>
+            </div>
+
+            <div class="notifications-dropdown-list" id="notificationsDropdownList">
+              {% if unread_appointments_list %}
+                {% for app in unread_appointments_list %}
+                  <div class="notification-card" id="notif-item-{{ app.id }}" data-id="{{ app.id }}">
+                    <div class="notif-card-body">
+                      <div class="notif-card-title">
+                        <strong>{{ app.customer_name }}</strong>
+                        <span class="notif-time">{{ app.created_at|datetime_format('%I:%M %p') }}</span>
+                      </div>
+                      <div class="notif-card-desc">
+                        <i class="fa-solid fa-scissors text-gold" style="font-size: 0.78rem; margin-right: 0.25rem;"></i> {{ app.service_name }}
+                      </div>
+                      <div class="notif-card-meta">
+                        <span><i class="fa-regular fa-calendar"></i> {{ app.appointment_date }} at {{ app.appointment_time }}</span>
+                        <span><i class="fa-solid fa-phone"></i> {{ app.phone }}</span>
+                      </div>
+                    </div>
+                    <div class="notif-card-actions">
+                      <a href="{{ url_for('admin_appointments') }}" class="notif-action-btn view" title="View in Appointments">
+                        <i class="fa-solid fa-arrow-right"></i>
+                      </a>
+                      <button type="button" class="notif-action-btn clear btn-clear-single" data-id="{{ app.id }}" title="Clear notification">
+                        <i class="fa-solid fa-check"></i>
+                      </button>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="notifications-empty" id="notificationsEmptyState">
+                  <i class="fa-regular fa-bell-slash" style="font-size: 2rem; color: #94a3b8; margin-bottom: 0.5rem;"></i>
+                  <p style="margin: 0; font-size: 0.85rem; color: #64748b; font-weight: 500;">No new appointment notifications.</p>
+                  <span style="font-size: 0.75rem; color: #94a3b8;">You're all caught up! ✨</span>
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="notifications-dropdown-footer">
+              <a href="{{ url_for('admin_appointments') }}" class="view-all-appointments-link">
+                View All Appointments <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
         <a href="{{ url_for('index') }}" target="_blank" class="btn-action" title="View Public Website">
           <i class="fa-solid fa-globe"></i> <span class="action-text">View Site</span>
         </a>
@@ -120,6 +184,8 @@
       {% block admin_content %}{% endblock %}
     </div>
 
+    <!-- Live Toast Container for Real-time incoming bookings -->
+    <div class="admin-toast-container" id="adminToastContainer"></div>
   </main>
 
   <!-- Admin JavaScript -->

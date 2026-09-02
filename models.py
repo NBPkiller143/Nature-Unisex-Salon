@@ -89,6 +89,7 @@ class Appointment(db.Model):
     
     status = db.Column(db.String(20), default='Pending', index=True) # 'Pending', 'Confirmed', 'Completed', 'Cancelled'
     admin_notes = db.Column(db.Text, nullable=True)
+    is_read = db.Column(db.Boolean, default=False, index=True)
     created_at = db.Column(db.DateTime, default=get_utc_now, index=True)
     
     def __repr__(self):
