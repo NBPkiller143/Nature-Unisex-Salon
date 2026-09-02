@@ -31,7 +31,7 @@ def seed_database():
             address="Kashi Vishwanatha, 12, Anjaneya Temple Street, Vannarpet, Yerappa Garden, Austin Town, Neelasandra, Bengaluru, Karnataka 560047, India",
             google_maps_url="https://www.google.com/maps/place/Nature+unisex+salon/@12.9570761,77.6192442,15z/data=!4m6!3m5!1s0x3bae156290e25a91:0x923594a7d37cb230!8m2!3d12.9565087!4d77.6196044!16s%2Fg%2F11z1zkml55?entry=ttu",
             google_maps_embed="https://maps.google.com/maps?q=12.9565087,77.6196044+(Nature%20Unisex%20Salon)&t=&z=16&ie=UTF8&iwloc=B&output=embed",
-            instagram_url="https://instagram.com/natureunisexsalon",
+            instagram_url="https://www.instagram.com/nature_unisex_salon72",
             facebook_url="https://facebook.com/natureunisexsalon",
             opening_hours_weekdays="Sunday - Monday: 09:00 - 21:00",
             opening_hours_weekends="Everyday: 09:00 - 21:00 (Open All 7 Days)",
