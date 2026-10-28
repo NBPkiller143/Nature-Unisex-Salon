@@ -31,6 +31,7 @@
           <tr class="{% if not inq.is_read %}unread-row{% endif %}">
             <td>
               <form action="{{ url_for('admin_toggle_enquiry_read', enquiry_id=inq.id) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="badge {% if inq.is_read %}badge-inactive{% else %}badge-pending{% endif %}" style="border: none; cursor: pointer;">
                   {% if inq.is_read %}Read{% else %}New / Unread{% endif %}
                 </button>
@@ -56,6 +57,7 @@
                   <i class="fa-brands fa-whatsapp"></i> WhatsApp
                 </a>
                 <form action="{{ url_for('admin_delete_enquiry', enquiry_id=inq.id) }}" method="POST" onsubmit="return confirm('Delete this enquiry message?');" style="display: inline;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                   <button type="submit" class="btn-action delete" title="Delete Inquiry">
                     <i class="fa-solid fa-trash-can"></i>
                   </button>

@@ -31,6 +31,7 @@
           <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem;">Added: {{ item.created_at.strftime('%d %b %Y') }}</p>
           
           <form action="{{ url_for('admin_delete_gallery_item', item_id=item.id) }}" method="POST" onsubmit="return confirm('Remove this image from gallery?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn-action delete" style="width: 100%; justify-content: center;">
               <i class="fa-solid fa-trash-can"></i> Delete Image
             </button>
@@ -53,6 +54,7 @@
       <button class="modal-close" onclick="closeModal('addGalleryModal')">&times;</button>
     </div>
     <form action="{{ url_for('admin_add_gallery_item') }}" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="modal-body">
         
         <div class="admin-form-group">

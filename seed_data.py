@@ -4,23 +4,28 @@ from models import db, User, Service, Gallery, Review, ContactEnquiry, WebsiteSe
 def seed_database():
     """Seeds the database with verified real menu data for Nature Unisex Salon."""
     
-    # 1. Seed Admin User
+    # 1. Seed Admin User (Safe & Idempotent)
     admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
     admin_email = os.environ.get('ADMIN_EMAIL', 'admin@natureunisexsalon.com')
-    admin_password = os.environ.get('ADMIN_PASSWORD', 'Admin@Nature2026')
+    admin_password = os.environ.get('ADMIN_PASSWORD')
     
     existing_admin = User.query.filter_by(username=admin_username).first()
     if not existing_admin:
-        admin = User(
-            username=admin_username,
-            email=admin_email,
-            is_admin=True
-        )
-        admin.set_password(admin_password)
-        db.session.add(admin)
-        print(f"[*] Admin user created: {admin_username}")
+        flask_env = os.environ.get('FLASK_ENV', 'development')
+        if flask_env == 'production' and not admin_password:
+            print("[!] Production environment: No ADMIN_PASSWORD provided. Skipping default admin creation for security. Use 'python init_admin.py' to provision administrators.")
+        else:
+            default_pwd = admin_password or 'Admin@Nature2026'
+            admin = User(
+                username=admin_username,
+                email=admin_email,
+                is_admin=True
+            )
+            admin.set_password(default_pwd)
+            db.session.add(admin)
+            print(f"[*] Admin user created: {admin_username}")
 
-    # 2. Seed Website Settings
+    # 2. Seed Website Settings (Preserve existing customizations)
     existing_settings = WebsiteSetting.query.first()
     if not existing_settings:
         settings = WebsiteSetting(
@@ -39,14 +44,14 @@ def seed_database():
             hero_headline="Style. Care. Confidence.",
             hero_subtext="Discover bespoke hair artistry, rejuvenating skincare, precision grooming, and relaxing spa therapies for both men and women in Austin Town & Neelasandra.",
             about_text="Nature Unisex Salon was founded on the philosophy that true beauty stems from mindful care, natural wellness, and artisan technique. We provide a hygienic, modern sanctuary equipped with LED mirror styling stations and hydra facial technology.",
-            currency_symbol="₹"
+            currency_symbol="₹",
+            max_concurrent_bookings_per_slot=3
         )
         db.session.add(settings)
         print("[*] Default website settings created.")
     else:
-        existing_settings.instagram_url = "https://www.instagram.com/nature_unisex_salon72/"
-        existing_settings.facebook_url = ""
-        db.session.commit()
+        # Preserve user custom settings
+        pass
 
     # 3. Seed Services from Verified Menu Card
     if Service.query.count() == 0:

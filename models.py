@@ -79,12 +79,12 @@ class Appointment(db.Model):
     email = db.Column(db.String(120), nullable=True)
     gender = db.Column(db.String(20), default='Not Specified')
     
-    # Service association (foreign key optional with fallback name string for flexibility)
+    # Service association
     service_id = db.Column(db.Integer, db.ForeignKey('services.id', ondelete='SET NULL'), nullable=True)
     service_name = db.Column(db.String(120), nullable=False)
     
     appointment_date = db.Column(db.String(20), nullable=False, index=True) # YYYY-MM-DD format
-    appointment_time = db.Column(db.String(20), nullable=False) # e.g. "11:00 AM"
+    appointment_time = db.Column(db.String(20), nullable=False) # e.g. "11:30" or "11:30 AM"
     message = db.Column(db.Text, nullable=True)
     
     status = db.Column(db.String(20), default='Pending', index=True) # 'Pending', 'Confirmed', 'Completed', 'Cancelled'
@@ -92,6 +92,11 @@ class Appointment(db.Model):
     is_read = db.Column(db.Boolean, default=False, index=True)
     created_at = db.Column(db.DateTime, default=get_utc_now, index=True)
     
+    @property
+    def booking_reference(self):
+        """Format a customer-facing reference code."""
+        return f"NAT-{self.id:04d}"
+
     def __repr__(self):
         return f'<Appointment {self.id} - {self.customer_name} ({self.status})>'
 
@@ -112,20 +117,24 @@ class Gallery(db.Model):
 
 
 class Review(db.Model):
-    """Customer Testimonials and Reviews."""
+    """
+    Customer Testimonials and Reviews.
+    Publicly submitted reviews default to unapproved/pending (is_active=False).
+    Only authenticated admins can publish reviews (is_active=True).
+    """
     __tablename__ = 'reviews'
     
     id = db.Column(db.Integer, primary_key=True)
     customer_name = db.Column(db.String(100), nullable=False)
     rating = db.Column(db.Integer, default=5, nullable=False) # 1-5
     review_text = db.Column(db.Text, nullable=False)
-    service_name = db.Column(db.String(100), nullable=True) # e.g. 'Hydra Facial & Beard Sculpting'
-    is_active = db.Column(db.Boolean, default=True, index=True)
+    service_name = db.Column(db.String(100), nullable=True)
+    is_active = db.Column(db.Boolean, default=False, index=True) # Moderation: False = Pending/Hidden, True = Approved
     display_order = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=get_utc_now)
     
     def __repr__(self):
-        return f'<Review {self.customer_name} ({self.rating}★)>'
+        return f'<Review {self.customer_name} ({self.rating}★, active={self.is_active})>'
 
 
 class ContactEnquiry(db.Model):
@@ -166,6 +175,7 @@ class WebsiteSetting(db.Model):
     hero_subtext = db.Column(db.Text, default='Experience premium hair styling, skin care, grooming, and rejuvenating beauty treatments crafted for both men and women in an elegant, hygienic haven.')
     about_text = db.Column(db.Text, default='Nature Unisex Salon is a contemporary sanctuary dedicated to helping men and women embrace their finest personal style. We blend botanical care with state-of-the-art styling techniques to deliver an unhurried, luxurious grooming experience.')
     currency_symbol = db.Column(db.String(10), default='₹')
+    max_concurrent_bookings_per_slot = db.Column(db.Integer, default=3)
     updated_at = db.Column(db.DateTime, default=get_utc_now, onupdate=get_utc_now)
     
     @classmethod

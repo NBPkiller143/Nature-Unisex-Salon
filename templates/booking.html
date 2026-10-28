@@ -65,6 +65,7 @@
           <p style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 2rem;">Please fill out the form below to secure your appointment.</p>
 
           <form action="{{ url_for('booking') }}" method="POST" id="appointmentBookingForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             
             <div class="form-row">
               <div class="form-group">
@@ -107,7 +108,7 @@
             <div class="form-row">
               <div class="form-group">
                 <label for="appointmentDate" class="form-label">Preferred Date *</label>
-                <input type="date" class="form-control" id="appointmentDate" name="appointment_date" required>
+                <input type="date" class="form-control" id="appointmentDate" name="appointment_date" min="{{ min_date }}" required>
               </div>
               <div class="form-group">
                 <label for="appointmentTime" class="form-label">Preferred Time Slot *</label>
@@ -140,13 +141,13 @@
             </div>
 
             <button type="submit" class="btn btn-gold btn-lg" style="width: 100%; margin-top: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem;">
-              <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i>
-              <span>Confirm & Book on WhatsApp</span>
+              <i class="fa-solid fa-calendar-check" style="font-size: 1.2rem;"></i>
+              <span>Request Appointment</span>
             </button>
 
             <div style="text-align: center; margin-top: 1rem;">
               <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">
-                <i class="fa-solid fa-bolt text-gold"></i> Submitting automatically reserves your slot and connects you directly to WhatsApp.
+                <i class="fa-solid fa-circle-check text-gold"></i> Submitting reserves your place for team confirmation.
               </span>
               <span style="font-size: 0.78rem; color: var(--text-muted);">
                 <i class="fa-solid fa-lock" style="color: var(--primary);"></i> Your contact details are strictly confidential.

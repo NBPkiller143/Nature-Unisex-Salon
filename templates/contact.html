@@ -98,6 +98,7 @@
         {% endif %}
 
         <form action="{{ url_for('contact') }}" method="POST" id="customerEnquiryForm" data-wa-number="{{ settings.whatsapp_number if settings else '917483737517' }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="form-row">
             <div class="form-group">
               <label for="enquiryName" class="form-label">Your Name *</label>

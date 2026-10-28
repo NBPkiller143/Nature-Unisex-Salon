@@ -63,6 +63,7 @@
             <td>{{ svc.formatted_duration() }}</td>
             <td>
               <form action="{{ url_for('admin_toggle_service', service_id=svc.id) }}" method="POST" style="display: inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="badge {% if svc.is_active %}badge-active{% else %}badge-inactive{% endif %}" style="border: none; cursor: pointer;" title="Click to Toggle Status">
                   {% if svc.is_active %}Active & Visible{% else %}Hidden (Inactive){% endif %}
                 </button>
@@ -77,6 +78,7 @@
 
                 <!-- Delete Service Button -->
                 <form action="{{ url_for('admin_delete_service', service_id=svc.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete service {{ svc.name }}?');" style="display: inline;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                   <button type="submit" class="btn-action delete" title="Delete Service">
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
@@ -104,6 +106,7 @@
       <button class="modal-close" onclick="closeModal('addServiceModal')">&times;</button>
     </div>
     <form action="{{ url_for('admin_add_service') }}" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="modal-body">
         
         <div class="admin-form-group">
@@ -179,6 +182,7 @@
       <button class="modal-close" onclick="closeModal('editServiceModal')">&times;</button>
     </div>
     <form id="editServiceForm" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="modal-body">
         
         <div class="admin-form-group">

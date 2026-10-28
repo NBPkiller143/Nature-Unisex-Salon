@@ -211,7 +211,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       fetch(`/api/admin/appointments/${appointmentId}/clear-notification`, {
         method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        }
       })
       .then(res => res.json())
       .then(data => {
@@ -229,7 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
     clearAllNotificationsBtn.addEventListener('click', () => {
       fetch('/api/admin/appointments/clear-all-notifications', {
         method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        }
       })
       .then(res => res.json())
       .then(data => {
@@ -293,7 +299,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Dismiss click
     toast.querySelector('[data-toast-clear]')?.addEventListener('click', () => {
-      fetch(`/api/admin/appointments/${appointment.id}/clear-notification`, { method: 'POST' })
+      fetch(`/api/admin/appointments/${appointment.id}/clear-notification`, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        }
+      })
         .then(res => res.json())
         .then(data => { if (data.success) updateBadgeCounts(data.unread_count); });
       toast.classList.add('fade-out');

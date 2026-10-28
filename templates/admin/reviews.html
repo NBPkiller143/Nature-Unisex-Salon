@@ -47,15 +47,25 @@
             </td>
             <td>
               <form action="{{ url_for('admin_toggle_review', review_id=rev.id) }}" method="POST" style="display: inline;">
-                <button type="submit" class="badge {% if rev.is_active %}badge-active{% else %}badge-inactive{% endif %}" style="border: none; cursor: pointer;" title="Toggle Visibility">
-                  {% if rev.is_active %}Published{% else %}Hidden{% endif %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="badge {% if rev.is_active %}badge-active{% else %}badge-pending{% endif %}" style="border: none; cursor: pointer;" title="Click to Toggle Visibility">
+                  {% if rev.is_active %}Published{% else %}Pending Moderation{% endif %}
                 </button>
               </form>
             </td>
             <td>{{ rev.created_at.strftime('%d %b %Y') }}</td>
             <td>
               <div class="action-btn-group">
+                {% if not rev.is_active %}
+                <form action="{{ url_for('admin_approve_review', review_id=rev.id) }}" method="POST" style="display: inline;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn-action" style="color: #059669; font-weight: 600;" title="Approve & Publish Review">
+                    <i class="fa-solid fa-circle-check"></i> Approve
+                  </button>
+                </form>
+                {% endif %}
                 <form action="{{ url_for('admin_delete_review', review_id=rev.id) }}" method="POST" onsubmit="return confirm('Delete this review permanently?');" style="display: inline;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                   <button type="submit" class="btn-action delete" title="Delete Review">
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
@@ -83,6 +93,7 @@
       <button class="modal-close" onclick="closeModal('addReviewModal')">&times;</button>
     </div>
     <form action="{{ url_for('admin_add_review') }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="modal-body">
         
         <div class="admin-form-group">

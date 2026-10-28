@@ -8,6 +8,25 @@ from flask import current_app
 import re
 import html
 
+# Allowed image MIME types and extensions
+ALLOWED_MIME_TYPES = {
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif'
+}
+
+DEFAULT_FALLBACK_IMAGES = {
+    'Hair': '/static/images/services/men_haircut.jpg',
+    'Skin': '/static/images/services/men_facial.jpg',
+    'Grooming': '/static/images/services/men_beard.jpg',
+    'Spa': '/static/images/services/men_spa.jpg',
+    'Bridal': '/static/images/services/women_bridal.jpg',
+    'Transformations': '/static/images/gallery/gallery_transform1.jpg',
+    'Interior': '/static/images/gallery/real_styling_station.jpg',
+    'default': '/static/images/hero_salon.jpg'
+}
+
 def sanitize_text(text, max_length=2000):
     """
     Sanitize raw user string inputs:
@@ -18,15 +37,13 @@ def sanitize_text(text, max_length=2000):
     """
     if text is None:
         return ""
-    # Convert to string and truncate
     text_str = str(text)[:max_length]
-    # Remove null bytes and control chars
+    # Remove null bytes and non-printable control chars
     text_str = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', text_str)
     # Strip script/style tags and contents
     text_str = re.sub(r'<(script|style).*?>.*?</\1>', '', text_str, flags=re.DOTALL | re.IGNORECASE)
-    # Strip all remaining HTML tags
+    # Strip remaining HTML tags
     text_str = re.sub(r'<[^>]+>', '', text_str)
-    # Strip leading/trailing whitespace
     return text_str.strip()
 
 def sanitize_email(email_str):
@@ -45,7 +62,7 @@ def is_valid_image_header(file_storage):
     disguised with image extensions.
     """
     header = file_storage.read(16)
-    file_storage.seek(0) # Reset stream position
+    file_storage.seek(0)
     
     if len(header) < 8:
         return False
@@ -67,21 +84,26 @@ def is_valid_image_header(file_storage):
 
 def allowed_file(filename):
     """Check if the uploaded file has an allowed image extension."""
-    if '.' not in filename:
+    if not filename or '.' not in filename:
         return False
     ext = filename.rsplit('.', 1)[1].lower()
-    return ext in current_app.config.get('ALLOWED_EXTENSIONS', {'png', 'jpg', 'jpeg', 'webp', 'gif'})
+    allowed = current_app.config.get('ALLOWED_EXTENSIONS', {'png', 'jpg', 'jpeg', 'webp', 'gif'})
+    return ext in allowed
 
 def save_uploaded_image(file_storage, folder_name='uploads'):
     """
-    Safely save an uploaded image to the static/uploads directory.
-    Validates extension, file headers, generates random UUID filename,
-    and prevents directory traversal.
+    Safely save an uploaded image to the upload storage directory.
+    Validates extension, MIME type, file header magic bytes, generates
+    a random UUID filename, and prevents path traversal attacks.
     """
-    if not file_storage or file_storage.filename == '':
+    if not file_storage or not file_storage.filename:
         return None
-    
+        
     if not allowed_file(file_storage.filename):
+        return None
+
+    # Validate MIME type
+    if file_storage.mimetype and file_storage.mimetype.lower() not in ALLOWED_MIME_TYPES:
         return None
         
     # Validate magic bytes
@@ -91,21 +113,32 @@ def save_uploaded_image(file_storage, folder_name='uploads'):
     original_filename = secure_filename(file_storage.filename)
     ext = original_filename.rsplit('.', 1)[1].lower() if '.' in original_filename else 'jpg'
     
-    # Use clean random hex string + extension (prevents directory traversal or name collision)
+    # Secure random filename (prevents collision and path traversal)
     unique_filename = f"{uuid.uuid4().hex}.{ext}"
     
     target_dir = Path(current_app.config['UPLOAD_FOLDER']).resolve()
     target_dir.mkdir(parents=True, exist_ok=True)
     
     file_path = (target_dir / unique_filename).resolve()
-    # Verify path is inside target_dir
-    if not str(file_path).startswith(str(target_dir)):
+    
+    # Path traversal defense
+    try:
+        file_path.relative_to(target_dir)
+    except ValueError:
         return None
         
     file_storage.save(file_path)
     
+    # Return web-accessible URI
     return f"/static/uploads/{unique_filename}"
 
+def get_safe_image_url(image_url, category=None):
+    """Return verified image URL or appropriate luxury salon fallback image."""
+    if image_url and str(image_url).strip():
+        url_str = str(image_url).strip()
+        if url_str.startswith('http://') or url_str.startswith('https://') or url_str.startswith('/static/'):
+            return url_str
+    return DEFAULT_FALLBACK_IMAGES.get(category, DEFAULT_FALLBACK_IMAGES['default'])
 
 def clean_phone_number(phone_str, default="917483737517"):
     """
@@ -117,17 +150,16 @@ def clean_phone_number(phone_str, default="917483737517"):
     digits = "".join(filter(str.isdigit, str(phone_str)))
     if not digits:
         return default
-    # If 10 digits (e.g. 7483737517), prepend India country code 91
     if len(digits) == 10:
         return f"91{digits}"
-    # If 11 digits starting with 0 (e.g. 07483737517)
     if len(digits) == 11 and digits.startswith('0'):
         return f"91{digits[1:]}"
     return digits
 
 def build_whatsapp_booking_url(whatsapp_number, customer_name, service_name, appointment_date, appointment_time, notes=""):
     """
-    Generates a pre-filled WhatsApp click-to-chat URL for quick booking.
+    Generates a pre-filled WhatsApp click-to-chat URL for quick customer confirmation.
+    All parameters are strictly URL-encoded.
     """
     clean_number = clean_phone_number(whatsapp_number)
     
@@ -179,9 +211,7 @@ def build_whatsapp_direct_chat_url(phone_number, custom_text=""):
     return f"https://api.whatsapp.com/send?phone={clean_number}"
 
 def build_whatsapp_admin_confirmation_url(customer_phone, customer_name, service_name, appointment_date, appointment_time, salon_address="12, Anjaneya Temple St, Austin Town / Neelasandra, Bengaluru"):
-    """
-    Generates admin 1-click confirmation message to send to customer on WhatsApp.
-    """
+    """Generates admin 1-click confirmation message to send to customer on WhatsApp."""
     clean_number = clean_phone_number(customer_phone)
     lines = [
         f"👋 Hello {customer_name}! 🌿",
@@ -231,5 +261,3 @@ def build_whatsapp_admin_review_url(customer_phone, customer_name, review_url="h
     message_text = "\n".join(lines)
     encoded_message = urllib.parse.quote(message_text)
     return f"https://api.whatsapp.com/send?phone={clean_number}&text={encoded_message}"
-
-

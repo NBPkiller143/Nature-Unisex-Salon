@@ -151,6 +151,7 @@
 
                   <!-- Delete Action -->
                   <form action="{{ url_for('admin_delete_appointment', appointment_id=app.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete appointment #{{ app.id }}?');" style="display: inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="btn-action delete" title="Delete Record">
                       <i class="fa-solid fa-trash-can"></i>
                     </button>
@@ -182,6 +183,7 @@
         <button type="button" class="modal-close" data-close-modal="quickAddModal">&times;</button>
       </div>
       <form action="{{ url_for('admin_quick_add_appointment') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="modal-body">
           
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -290,6 +292,7 @@
         <button type="button" class="modal-close" data-close-modal="statusModal">&times;</button>
       </div>
       <form id="updateStatusForm" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="modal-body">
           <div class="admin-form-group">
             <label class="admin-form-label">Appointment Status *</label>

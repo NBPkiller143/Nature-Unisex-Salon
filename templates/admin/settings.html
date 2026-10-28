@@ -17,6 +17,7 @@
     </div>
 
     <form action="{{ url_for('admin_settings') }}" method="POST" style="padding: 1.5rem;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       
       <div class="admin-form-grid">
         <div class="admin-form-group">
@@ -103,6 +104,12 @@
         <textarea name="about_text" class="admin-form-control" rows="4">{{ settings.about_text }}</textarea>
       </div>
 
+      <div class="admin-form-group">
+        <label class="admin-form-label">Max Concurrent Bookings per Slot (Salon Station Capacity)</label>
+        <input type="number" name="max_concurrent_bookings_per_slot" class="admin-form-control" min="1" max="10" value="{{ settings.max_concurrent_bookings_per_slot or 3 }}" required>
+        <small style="color: var(--text-muted); font-size: 0.78rem;">Controls server-side slot capacity to prevent double bookings during peak hours.</small>
+      </div>
+
       <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem; margin-top: 1.5rem; text-align: right;">
         <button type="submit" class="btn-action" style="background: var(--admin-primary); color: #ffffff; padding: 0.75rem 1.5rem; font-weight: 700; font-size: 0.95rem;">
           <i class="fa-solid fa-floppy-disk"></i> Save Website Settings
@@ -119,6 +126,7 @@
     </div>
 
     <form action="{{ url_for('admin_update_profile') }}" method="POST" style="padding: 1.5rem;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem;">
         Update your login username, email, or change your administrative password.
       </p>

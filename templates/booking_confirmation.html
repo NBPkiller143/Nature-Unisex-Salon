@@ -4,87 +4,91 @@
 
 {% block content %}
 
-<section class="section-padding" style="background: var(--bg-main);">
+<section class="section-padding" style="background: var(--bg-main); min-height: 75vh; display: flex; align-items: center;">
   <div class="container container-narrow">
     <div style="background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-lg); padding: 3.5rem 2.5rem; text-align: center;">
       
-      <!-- Success Animated Icon -->
-      <div style="width: 80px; height: 80px; border-radius: 50%; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem auto; border: 2px solid #a7f3d0;">
-        <i class="fa-solid fa-check"></i>
-      </div>
-
-      <span class="section-tag" style="background: #ecfdf5; color: #047857;"><i class="fa-solid fa-circle-check"></i> Request Received</span>
-      <h1 style="font-size: 2.4rem; margin-top: 0.5rem; margin-bottom: 1rem;">Thank You, {{ appointment.customer_name }}!</h1>
-      <p style="font-size: 1.1rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 2rem auto; line-height: 1.6;">
-        Your appointment request has been received. <strong>{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</strong> will contact you shortly to confirm your booking.
-      </p>
-
-      <!-- Appointment Summary Card -->
-      <div style="background: var(--bg-soft); border-radius: var(--radius-md); border: 1px solid var(--border-light); padding: 2rem; max-width: 520px; margin: 0 auto 2.5rem auto; text-align: left;">
-        <h4 style="font-size: 1.15rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.8rem; margin-bottom: 1.2rem; color: var(--primary);">
-          <i class="fa-solid fa-receipt text-gold" style="margin-right: 0.4rem;"></i> Booking Summary
-        </h4>
-
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
-          <span style="color: var(--text-muted);">Booking Reference:</span>
-          <strong>#NAT-{{ appointment.id }}</strong>
+      {% if appointment %}
+        <!-- Success Animated Icon -->
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem auto; border: 2px solid #a7f3d0;">
+          <i class="fa-solid fa-check"></i>
         </div>
 
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
-          <span style="color: var(--text-muted);">Service:</span>
-          <strong>{{ appointment.service_name }}</strong>
+        <span class="section-tag" style="background: #ecfdf5; color: #047857;"><i class="fa-solid fa-circle-check"></i> Request Received</span>
+        <h1 style="font-size: 2.4rem; margin-top: 0.5rem; margin-bottom: 1rem;">Thank You, {{ appointment.customer_name }}!</h1>
+        <p style="font-size: 1.1rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 2rem auto; line-height: 1.6;">
+          Your appointment request has been recorded. <strong>{{ settings.salon_name if settings else 'Nature Unisex Salon' }}</strong> will review your details and confirm your slot.
+        </p>
+
+        <!-- Appointment Summary Card -->
+        <div style="background: var(--bg-soft); border-radius: var(--radius-md); border: 1px solid var(--border-light); padding: 2rem; max-width: 520px; margin: 0 auto 2.5rem auto; text-align: left;">
+          <h4 style="font-size: 1.15rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.8rem; margin-bottom: 1.2rem; color: var(--primary);">
+            <i class="fa-solid fa-receipt text-gold" style="margin-right: 0.4rem;"></i> Booking Summary
+          </h4>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+            <span style="color: var(--text-muted);">Booking Reference:</span>
+            <strong>#NAT-{{ appointment.id }}</strong>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+            <span style="color: var(--text-muted);">Service:</span>
+            <strong>{{ appointment.service_name }}</strong>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+            <span style="color: var(--text-muted);">Date & Time:</span>
+            <strong>{{ appointment.appointment_date }} at {{ appointment.appointment_time }}</strong>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+            <span style="color: var(--text-muted);">Contact:</span>
+            <strong>{{ appointment.phone }}</strong>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: 0.95rem;">
+            <span style="color: var(--text-muted);">Status:</span>
+            <span class="badge {% if appointment.status == 'Confirmed' %}badge-active{% elif appointment.status == 'Cancelled' %}badge-inactive{% else %}badge-pending{% endif %}">
+              {{ appointment.status or 'Pending Confirmation' }}
+            </span>
+          </div>
         </div>
 
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
-          <span style="color: var(--text-muted);">Date & Time:</span>
-          <strong>{{ appointment.appointment_date }} at {{ appointment.appointment_time }}</strong>
+        <!-- WhatsApp Confirmation Button (Manual Click Only, No Auto-Redirect) -->
+        {% if whatsapp_url and (whatsapp_url.startswith('https://api.whatsapp.com/') or whatsapp_url.startswith('https://wa.me/')) %}
+        <div style="background: rgba(37, 211, 102, 0.08); border: 1px dashed #25d366; border-radius: var(--radius-md); padding: 1.5rem; max-width: 520px; margin: 0 auto 2.5rem auto;">
+          <h4 style="font-family: var(--font-body); font-size: 1rem; color: #166534; margin-bottom: 0.4rem;">
+            <i class="fa-brands fa-whatsapp" style="color: #25d366; margin-right: 0.35rem;"></i> Direct WhatsApp Desk
+          </h4>
+          <p style="font-size: 0.88rem; color: #15803d; margin-bottom: 1.2rem; line-height: 1.5;">
+            Need quick confirmation or have custom styling preferences? Click below to send your pre-filled reservation details directly to our reception via WhatsApp.
+          </p>
+          <a href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-gold" id="whatsappConfirmBtn" style="background: #25d366; border-color: #25d366; color: #ffffff; width: 100%; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35); display: flex; align-items: center; justify-content: center; gap: 0.6rem; font-size: 1.05rem; font-weight: 600; text-decoration: none;">
+            <i class="fa-brands fa-whatsapp" style="font-size: 1.35rem;"></i> Send Confirmation via WhatsApp
+          </a>
+        </div>
+        {% endif %}
+
+      {% else %}
+        <!-- Missing or Invalid Booking Reference State -->
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem auto; border: 2px solid #fde68a;">
+          <i class="fa-solid fa-calendar-xmark"></i>
         </div>
 
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
-          <span style="color: var(--text-muted);">Mobile Number:</span>
-          <strong>{{ appointment.phone }}</strong>
-        </div>
+        <span class="section-tag" style="background: #fef3c7; color: #92400e;"><i class="fa-solid fa-circle-info"></i> Notice</span>
+        <h1 style="font-size: 2.2rem; margin-top: 0.5rem; margin-bottom: 1rem;">No Active Booking Found</h1>
+        <p style="font-size: 1.05rem; color: var(--text-muted); max-width: 580px; margin: 0 auto 2rem auto; line-height: 1.6;">
+          We could not locate this booking reference. If you recently submitted an appointment, our reception team may already be processing it. You can book a new appointment or get in touch with us anytime.
+        </p>
+      {% endif %}
 
-        <div style="display: flex; justify-content: space-between; font-size: 0.95rem;">
-          <span style="color: var(--text-muted);">Initial Status:</span>
-          <span class="badge badge-pending">Pending Confirmation</span>
-        </div>
-      </div>
-
-      <!-- WhatsApp Auto-Redirect Alert -->
-      <div style="background: #ecfdf5; border: 1.5px solid #10b981; border-radius: var(--radius-md); padding: 1.2rem 1.5rem; max-width: 520px; margin: 0 auto 2rem auto; display: flex; align-items: center; gap: 0.85rem; text-align: left;">
-        <i class="fa-solid fa-circle-notch fa-spin text-gold" style="font-size: 1.4rem; color: #10b981; flex-shrink: 0;"></i>
-        <div>
-          <h4 style="margin: 0; font-size: 0.98rem; color: #065f46; font-weight: 700;">Redirecting to WhatsApp...</h4>
-          <p style="margin: 0.2rem 0 0 0; font-size: 0.82rem; color: #047857;">Connecting you directly with Nature Unisex Salon reception to send your pre-filled appointment details.</p>
-        </div>
-      </div>
-
-      <!-- WhatsApp Quick Confirmation Button -->
-      <div style="background: rgba(37, 211, 102, 0.08); border: 1px dashed #25d366; border-radius: var(--radius-md); padding: 1.5rem; max-width: 520px; margin: 0 auto 2.5rem auto;">
-        <h4 style="font-family: var(--font-body); font-size: 1rem; color: #166534; margin-bottom: 0.4rem;">Send booking directly on WhatsApp</h4>
-        <p style="font-size: 0.85rem; color: #15803d; margin-bottom: 1rem;">Click below if you are not automatically redirected within a few seconds.</p>
-        <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="btn btn-gold" id="whatsappRedirectBtn" style="background: #25d366; border-color: #25d366; color: #ffffff; width: 100%; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35); display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1.05rem;">
-          <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i> Continue on WhatsApp
-        </a>
-      </div>
-
-      <meta http-equiv="refresh" content="1; url={{ whatsapp_url }}">
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          var waUrl = "{{ whatsapp_url|safe }}";
-          if (waUrl) {
-            setTimeout(function() {
-              window.location.href = waUrl;
-            }, 600);
-          }
-        });
-      </script>
-
-      <!-- Secondary Links -->
+      <!-- Navigation Links -->
       <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-        <a href="{{ url_for('index') }}" class="btn btn-outline"><i class="fa-solid fa-house"></i> Return Home</a>
-        <a href="{{ url_for('services') }}" class="btn btn-outline-gold"><i class="fa-solid fa-scissors"></i> Explore More Services</a>
+        <a href="{{ url_for('index') }}" class="btn btn-outline"><i class="fa-solid fa-house"></i> Back to Home</a>
+        <a href="{{ url_for('services') }}" class="btn btn-outline-gold"><i class="fa-solid fa-scissors"></i> Explore Services</a>
+        {% if not appointment %}
+        <a href="{{ url_for('booking') }}" class="btn btn-gold"><i class="fa-solid fa-calendar-plus"></i> Book an Appointment</a>
+        {% endif %}
       </div>
 
     </div>

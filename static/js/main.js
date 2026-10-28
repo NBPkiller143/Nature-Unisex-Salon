@@ -226,9 +226,16 @@ document.addEventListener('DOMContentLoaded', () => {
       formData.append('email', email);
       formData.append('subject', subject);
       formData.append('message', message);
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+      if (csrfToken) {
+        formData.append('csrf_token', csrfToken);
+      }
 
       fetch('/api/enquiry', {
         method: 'POST',
+        headers: {
+          'X-CSRF-Token': csrfToken
+        },
         body: formData
       }).catch(err => console.log('Enquiry logged:', err));
 
