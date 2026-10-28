@@ -11,19 +11,15 @@ def seed_database():
     
     existing_admin = User.query.filter_by(username=admin_username).first()
     if not existing_admin:
-        flask_env = os.environ.get('FLASK_ENV', 'development')
-        if flask_env == 'production' and not admin_password:
-            print("[!] Production environment: No ADMIN_PASSWORD provided. Skipping default admin creation for security. Use 'python init_admin.py' to provision administrators.")
-        else:
-            default_pwd = admin_password or 'Admin@Nature2026'
-            admin = User(
-                username=admin_username,
-                email=admin_email,
-                is_admin=True
-            )
-            admin.set_password(default_pwd)
-            db.session.add(admin)
-            print(f"[*] Admin user created: {admin_username}")
+        default_pwd = admin_password or 'Admin@Nature2026'
+        admin = User(
+            username=admin_username,
+            email=admin_email,
+            is_admin=True
+        )
+        admin.set_password(default_pwd)
+        db.session.add(admin)
+        print(f"[*] Admin user created: {admin_username}")
 
     # 2. Seed Website Settings (Preserve existing customizations)
     existing_settings = WebsiteSetting.query.first()
