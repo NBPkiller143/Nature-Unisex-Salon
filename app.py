@@ -4,7 +4,7 @@ from collections import defaultdict
 from pathlib import Path
 from datetime import datetime
 from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort, session, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort, session, send_from_directory, current_app
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -61,6 +61,11 @@ def create_app(config_name=None):
     # Run production validation checks
     if config_name == 'production' or (hasattr(config_obj, 'init_app') and not app.config.get('TESTING')):
         ProductionConfig.init_app(app)
+        try:
+            from werkzeug.middleware.proxy_fix import ProxyFix
+            app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+        except Exception:
+            pass
         
     # Dynamic upload folder override from environment if provided
     if os.environ.get('UPLOAD_DIR'):
@@ -217,9 +222,25 @@ def create_app(config_name=None):
     @app.route('/')
     def index():
         """Home page with hero, featured services, gallery highlights, and verified customer reviews."""
-        featured_services = Service.query.filter_by(is_active=True).order_by(Service.display_order.asc()).limit(6).all()
-        gallery_items = Gallery.query.filter_by(is_active=True).order_by(Gallery.created_at.desc()).limit(6).all()
-        reviews = Review.query.filter_by(is_active=True).order_by(Review.display_order.asc(), Review.created_at.desc()).limit(6).all()
+        try:
+            featured_services = Service.query.filter_by(is_active=True).order_by(Service.display_order.asc()).limit(6).all()
+        except Exception:
+            try:
+                init_db(app)
+                featured_services = Service.query.filter_by(is_active=True).order_by(Service.display_order.asc()).limit(6).all()
+            except Exception:
+                featured_services = []
+
+        try:
+            gallery_items = Gallery.query.filter_by(is_active=True).order_by(Gallery.created_at.desc()).limit(6).all()
+        except Exception:
+            gallery_items = []
+
+        try:
+            reviews = Review.query.filter_by(is_active=True).order_by(Review.display_order.asc(), Review.created_at.desc()).limit(6).all()
+        except Exception:
+            reviews = []
+
         categories = ['Hair', 'Skin', 'Grooming', 'Makeup', 'Bridal', 'Packages']
         return render_template(
             'index.html',
@@ -246,9 +267,19 @@ def create_app(config_name=None):
         if category_filter != 'all':
             query = query.filter_by(category=category_filter)
             
-        services_list = query.order_by(Service.gender_target.asc(), Service.display_order.asc()).all()
-        all_services = Service.query.filter_by(is_active=True).all()
-        categories = sorted(list(set(s.category for s in all_services)))
+        try:
+            services_list = query.order_by(Service.gender_target.asc(), Service.display_order.asc()).all()
+            all_services = Service.query.filter_by(is_active=True).all()
+            categories = sorted(list(set(s.category for s in all_services)))
+        except Exception:
+            try:
+                init_db(app)
+                all_services = Service.query.filter_by(is_active=True).all()
+                categories = sorted(list(set(s.category for s in all_services)))
+                services_list = all_services[:12]
+            except Exception:
+                services_list = []
+                categories = ['Hair', 'Skin', 'Grooming', 'Makeup', 'Bridal', 'Packages']
         
         return render_template(
             'services.html',
