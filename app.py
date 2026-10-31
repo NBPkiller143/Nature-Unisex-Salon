@@ -1321,6 +1321,19 @@ def init_db(app_instance=None):
 # Application instance factory invocation
 app = create_app()
 
+# Auto-initialize database schema and seeds on WSGI startup (e.g. Gunicorn on Render)
+if not app.config.get('TESTING'):
+    with app.app_context():
+        try:
+            from sqlalchemy import inspect
+            inspector = inspect(db.engine)
+            tables = inspector.get_table_names()
+            if 'services' not in tables or 'website_settings' not in tables:
+                print("[*] WSGI startup: Initializing database tables and seed data...")
+                init_db(app)
+        except Exception as e:
+            print(f"[!] Database startup initialization notice: {e}")
+
 if __name__ == '__main__':
     with app.app_context():
         init_db(app)
